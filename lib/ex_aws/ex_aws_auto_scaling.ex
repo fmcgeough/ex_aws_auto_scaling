@@ -2,24 +2,50 @@ defmodule ExAws.AutoScaling do
   @moduledoc """
     Operations on AWS EC2 Auto Scaling
   """
-  use ExAws.Utils,
-    format_type: :xml,
-    non_standard_keys: %{}
+  # Help with formatting requests
+  @special_formatting %{
+    target_group_arns: "TargetGroupARNs",
+    classic_link_vpc_id: "ClassicLinkVPCId",
+    classic_link_vpc_security_groups: "ClassicLinkVPCSecurityGroups",
+    notification_target_arn: "NotificationTargetARN",
+    role_arn: "RoleARN"
+  }
 
-  @special_formatting %{target_group_arns: "TargetGroupARNs"}
-
-  # version of the AWS API
-  @version "2011-01-01"
   @member_actions [
     :auto_scaling_group_names,
     :availability_zones,
-    :load_balancer_names,
+    :classic_link_vpc_security_groups,
     :instance_ids,
-    :target_group_arns,
+    :load_balancer_names,
     :scheduled_action_names,
-    :scheduled_update_group_actions
+    :scheduled_update_group_actions,
+    :security_groups,
+    :target_group_arns
   ]
 
+  use ExAws.Utils,
+    format_type: :xml,
+    non_standard_keys: @special_formatting
+
+  # version of the AWS API
+  @version "2011-01-01"
+
+  @typedoc """
+    Optional arguments to `describe_auto_scaling_groups/1`
+
+  ## Keys
+
+  * auto_scaling_group_names (List of String) - The names of the Auto Scaling groups.
+  Each name can be a maximum of 1600 characters. By default, you can only specify up
+  to 50 names. You can optionally increase this limit using the MaxRecords parameter.
+  If you omit this parameter, all Auto Scaling groups are described.
+
+  * max_records (Integer) - The maximum number of items to return with this call. The
+  default value is 50 and the maximum value is 100.
+
+  * next_token (String) - The token for the next set of items to return. (You received
+  this token from a previous call.)
+  """
   @type describe_auto_scaling_groups_opts :: [
           auto_scaling_group_names: [binary, ...],
           max_records: integer,
@@ -29,7 +55,7 @@ defmodule ExAws.AutoScaling do
   @typedoc """
     Optional arguments to `attach_instances/2`
 
-  ## Members
+  ## Keys
 
    * instance_ids (List of String) - The IDs of the instances. You can
    specify up to 20 instances. Minimum length of 1. Maximum length of 19.
@@ -72,13 +98,49 @@ defmodule ExAws.AutoScaling do
           version: binary
         ]
 
+  @typedoc """
+    Describes a lifecycle hook, which tells Amazon EC2 Auto Scaling that you
+    want to perform an action whenever it launches instances or whenever it
+    terminates instances.
+
+    Used in combination with `create_auto_scaling_group/3`. For more information,
+    see Amazon EC2 Auto Scaling Lifecycle Hooks in the Amazon EC2 Auto Scaling
+    User Guide.
+
+  ## Keys
+
+    * default_result (String) - Defines the action the Auto Scaling group
+    should take when the lifecycle hook timeout elapses or if an unexpected
+    failure occurs. The valid values are "CONTINUE" and "ABANDON".
+
+    * heartbeat_timeout (Integer) - The maximum time, in seconds, that can
+    elapse before the lifecycle hook times out. If the lifecycle hook times
+    out, Amazon EC2 Auto Scaling performs the action that you specified in the
+    default_result parameter. You can prevent the lifecycle hook from timing
+    out by calling `record_lifecycle_action_heartbeat/2`.
+
+    * lifecycle_hook_name (String) - The name of the lifecycle hook.
+
+    * lifecycle_transition (String) - The state of the EC2 instance to which you
+    want to attach the lifecycle hook. The possible values are:
+    "autoscaling:EC2_INSTANCE_LAUNCHING" | "autoscaling:EC2_INSTANCE_TERMINATING"
+
+    * notification_target_arn (String) - The ARN of the target that Amazon EC2
+    Auto Scaling sends notifications to when an instance is in the transition state
+    for the lifecycle hook. The notification target can be either an SQS queue or
+    an SNS topic.
+
+    * role_arn (String) - The ARN of the IAM role that allows the Auto Scaling group
+    to publish to the specified notification target, for example, an Amazon SNS
+    topic or an Amazon SQS queue
+  """
   @type lifecycle_hook_specification :: [
           default_result: binary,
           heartbeat_timeout: integer,
           lifecycle_hook_name: binary,
           lifecycle_transition: binary,
-          notification_target_ARN: binary,
-          role_ARN: binary
+          notification_target_arn: binary,
+          role_arn: binary
         ]
 
   @typedoc """
@@ -219,17 +281,17 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-  * key (String) - The tag key. Length Constraints: Minimum length of 1. Maximum length of 128.
-  Required.
+    * key (String) - The tag key. Length Constraints: Minimum length of 1. Maximum length of 128.
+    Required.
 
-  * propagate_at_launch (Boolean) - Determines whether the tag is added to new instances as
-  they are launched in the group.
+    * propagate_at_launch (Boolean) - Determines whether the tag is added to new instances as
+    they are launched in the group.
 
-  * resource_id (String) - The name of the group.
+    * resource_id (String) - The name of the group.
 
-  * resource_type (String) - The type of resource. The only supported value is "auto-scaling-group".
+    * resource_type (String) - The type of resource. The only supported value is "auto-scaling-group".
 
-  * value (String) - The tag value. Length Constraints: Minimum length of 0. Maximum length of 256.
+    * value (String) - The tag value. Length Constraints: Minimum length of 0. Maximum length of 256.
 
   """
   @type tag :: [
@@ -333,6 +395,182 @@ defmodule ExAws.AutoScaling do
           target_group_arns: [binary, ...],
           termination_policies: [binary, ...],
           vpc_zone_identifier: binary
+        ]
+
+  @typedoc """
+    Describes an Amazon EBS volume. Used in combination with `t:block_device_mapping/0`
+
+  ## Keys
+
+    * delete_on_termination (Boolean) - Indicates whether the volume is deleted on
+    instance termination. The default value is true.
+
+    * encrypted (Boolean) - Specifies whether the volume should be encrypted.
+    Encrypted EBS volumes must be attached to instances that support Amazon EBS
+    encryption. Volumes that are created from encrypted snapshots are automatically
+    encrypted. There is no way to create an encrypted volume from an unencrypted
+    snapshot or an unencrypted volume from an encrypted snapshot. If your AMI uses
+    encrypted volumes, you can only launch it on supported instance types. For more
+    information, see Amazon EBS Encryption in the Amazon EC2 User Guide for Linux Instances.
+
+    * iops (Integer) - The number of I/O operations per second (IOPS) to provision for
+    the volume. For more information, see Amazon EBS Volume Types in the Amazon EC2 User
+    Guide for Linux Instances. Constraint: Required when the volume type is io1. (Not
+    used with standard, gp2, st1, or sc1 volumes.) Valid Range: Minimum value of 100.
+    Maximum value of 20000.
+
+    * snapshot_id (String) - The ID of the snapshot. This parameter is optional if you
+    specify a volume size.
+
+    * volume_size (Integer) - The volume size, in GiB. Constraints: 1-1,024 for standard,
+    4-16,384 for io1, 1-16,384 for gp2, and 500-16,384 for st1 and sc1. If you specify a
+    snapshot, the volume size must be equal to or larger than the snapshot size.
+    Default: If you create a volume from a snapshot and you don't specify a volume size,
+    the default is the snapshot size. Valid Range: Minimum value of 1. Maximum value of 16384.
+
+    * volume_type (String) - The volume type, which can be "standard" for Magnetic, "io1" for
+    Provisioned IOPS SSD, "gp2" for General Purpose SSD, "st1" for Throughput Optimized HDD,
+    or "sc1" for Cold HDD. For more information, see Amazon EBS Volume Types in the Amazon
+    EC2 User Guide for Linux Instances.
+  """
+  @type ebs :: [
+          delete_on_termination: boolean,
+          encrypted: boolean,
+          iops: integer,
+          snapshot_id: binary,
+          volume_size: integer,
+          volume_type: binary
+        ]
+
+  @typedoc """
+    Describes a block device mapping.
+
+  ## Keys
+
+    * device_name (String) - The device name exposed to the EC2 instance (for
+    example, /dev/sdh or xvdh). For more information, see Device Naming on Linux
+    Instances in the Amazon EC2 User Guide for Linux Instances.
+
+    * ebs - The information about the Amazon EBS volume.
+
+    * no_device (Boolean) - Suppresses a device mapping. If this parameter is true for
+    the root device, the instance might fail the EC2 health check. In that case,
+    Amazon EC2 Auto Scaling launches a replacement instance.
+
+    * virtual_name (String) - The name of the virtual device (for example, ephemeral0).
+  """
+  @type block_device_mapping :: [
+          device_name: binary,
+          ebs: ebs,
+          no_device: boolean,
+          virtual_name: binary
+        ]
+
+  @typedoc """
+    The optional parameters when calling `create_launch_configuration/3`
+
+  ## Keys
+
+    * associate_public_ip_address (Boolean) - Used for groups that launch instances into a virtual
+    private cloud (VPC). Specifies whether to assign a public IP address to each instance.
+    For more information, see Launching Auto Scaling Instances in a VPC in the Amazon EC2
+    Auto Scaling User Guide. If you specify this parameter, be sure to specify at least
+    one subnet when you create your group. Default: If the instance is launched into a
+    default subnet, the default is to assign a public IP address. If the instance is launched
+    into a nondefault subnet, the default is not to assign a public IP address.
+
+    * block_device_mappings (List of `t:block_device_mapping/0`) - One or more mappings that
+    specify how block devices are exposed to the instance. For more information, see Block
+    Device Mapping in the Amazon EC2 User Guide for Linux Instances.
+
+    * classic_link_vpc_id (String) - The ID of a ClassicLink-enabled VPC to link your EC2-Classic
+    instances to. This parameter is supported only if you are launching EC2-Classic instances. For
+    more information, see ClassicLink in the Amazon EC2 User Guide for Linux Instances and Linking
+    EC2-Classic Instances to a VPC in the Amazon EC2 Auto Scaling User Guide.
+
+    * classic_link_vpc_security_groups (List of String) - The IDs of one or more security groups
+    for the specified ClassicLink-enabled VPC. This parameter is required if you specify a
+    ClassicLink-enabled VPC, and is not supported otherwise. For more information, see ClassicLink
+    in the Amazon EC2 User Guide for Linux Instances and Linking EC2-Classic Instances to a VPC in
+    the Amazon EC2 Auto Scaling User Guide.
+
+    * ebs_optimized (Boolean) - Indicates whether the instance is optimized for Amazon EBS I/O.
+    By default, the instance is not optimized for EBS I/O. The optimization provides dedicated
+    throughput to Amazon EBS and an optimized configuration stack to provide optimal I/O performance.
+    This optimization is not available with all instance types. Additional usage charges apply.
+    For more information, see Amazon EBS-Optimized Instances in the Amazon EC2 User Guide for
+    Linux Instances.
+
+    * iam_instance_profile (String) - The name or the Amazon Resource Name (ARN) of the instance
+    profile associated with the IAM role for the instance. EC2 instances launched with an IAM role
+    automatically have AWS security credentials available. You can use IAM roles with Amazon EC2
+    Auto Scaling to automatically enable applications running on your EC2 instances to securely
+    access other AWS resources. For more information, see Use an IAM Role for Applications That
+    Run on Amazon EC2 Instances in the Amazon EC2 Auto Scaling User Guide.
+
+    * image_id (String) - The ID of the Amazon Machine Image (AMI) to use to launch your EC2 instances.
+    If you do not specify instance_id, you must specify image_id.
+
+    * instance_id (String) - The ID of the instance to use to create the launch configuration. The new
+    launch configuration derives attributes from the instance, except for the block device mapping.
+    If you do not specify instance_id, you must specify both image_id and instance_type.
+    To create a launch configuration with a block device mapping or override any other instance
+    attributes, specify them as part of the same request. For more information, see Create a Launch
+    Configuration Using an EC2 Instance in the Amazon EC2 Auto Scaling User Guide.
+
+    * instance_monitoring (Boolean) - Enables detailed monitoring (true) or basic monitoring
+    (false) for the Auto Scaling instances. The default value is true.
+
+    * instance_type (String) - The instance type of the EC2 instance. If you do not specify instance_id,
+    you must specify instance_type. For information about available instance types, see Available Instance
+    Types in the Amazon EC2 User Guide for Linux Instances.
+
+    * kernel_id (String) - The ID of the kernel associated with the AMI.
+
+    * key_name (String) - The name of the key pair. For more information, see Amazon EC2 Key Pairs in
+    the Amazon EC2 User Guide for Linux Instances.
+
+    * placement_tenancy (String) - The tenancy of the instance. An instance with a tenancy of dedicated
+    runs on single-tenant hardware and can only be launched into a VPC. To launch Dedicated Instances
+    into a shared tenancy VPC (a VPC with the instance placement tenancy attribute set to default), you
+    must set the value of this parameter to dedicated. If you specify this parameter, be sure to specify at
+    least one subnet when you create your group. For more information, see Launching Auto Scaling Instances
+    in a VPC in the Amazon EC2 Auto Scaling User Guide. Valid values: "default" | "dedicated"
+
+    * ramdisk_id (String) - The ID of the RAM disk associated with the AMI.
+
+    * security_groups (List of String) - One or more security groups with which to associate the instances.
+    If your instances are launched in EC2-Classic, you can either specify security group names or the
+    security group IDs. For more information, see Amazon EC2 Security Groups in the Amazon EC2 User Guide
+    for Linux Instances. If your instances are launched into a VPC, specify security group IDs. For more
+    information, see Security Groups for Your VPC in the Amazon Virtual Private Cloud User Guide.
+
+    * spot_price (String) - The maximum hourly price to be paid for any Spot Instance launched to fulfill
+    the request. Spot Instances are launched when the price you specify exceeds the current Spot market
+    price. For more information, see Launching Spot Instances in Your Auto Scaling Group in the Amazon EC2
+    Auto Scaling User Guide.
+
+    * user_data (String) - The user data to make available to the launched EC2 instances. For more
+    information, see Instance Metadata and User Data in the Amazon EC2 User Guide for Linux Instances.
+  """
+  @type create_launch_configuration_opts :: [
+          associate_public_ip_address: boolean,
+          block_device_mappings: [block_device_mapping, ...],
+          classic_link_vpc_id: binary,
+          classic_link_vpc_security_groups: [binary, ...],
+          ebs_optimized: boolean,
+          iam_instance_profile: binary,
+          image_id: binary,
+          instance_id: binary,
+          instance_monitoring: boolean,
+          instance_type: binary,
+          kernel_id: binary,
+          key_name: binary,
+          placement_tenancy: binary,
+          ramdisk_id: binary,
+          security_groups: [binary, ...],
+          spot_price: binary,
+          user_data: binary
         ]
 
   @doc """
@@ -557,6 +795,26 @@ defmodule ExAws.AutoScaling do
   end
 
   @doc """
+    Creates a launch configuration.
+
+    If you exceed your maximum limit of launch configurations, the call fails.
+    For information about viewing this limit, see `describe_account_limits/2`.
+    For information about updating this limit, see Amazon EC2 Auto Scaling
+    Limits in the Amazon EC2 Auto Scaling User Guide.
+
+    For more information, see Launch Configurations in the Amazon EC2 Auto
+    Scaling User Guide.
+  """
+  @spec create_launch_configuration(
+          launch_configuration_name :: binary,
+          opts :: create_launch_configuration_opts
+        ) :: ExAws.Operation.Query.t()
+  def create_launch_configuration(launch_configuration_name, opts) do
+    [{:launch_configuration_name, launch_configuration_name} | opts]
+    |> build_request(:create_launch_configuration)
+  end
+
+  @doc """
     Describes one or more Auto Scaling groups
   """
   @spec describe_auto_scaling_groups() :: ExAws.Operation.Query.t()
@@ -600,7 +858,7 @@ defmodule ExAws.AutoScaling do
   # Format Functions #
   ####################
   defp format_param({action, names}) when action in @member_actions do
-    action_string = action |> convert_to_string()
+    action_string = action |> atom_to_string()
     names |> format(prefix: "#{action_string}.member")
   end
 
@@ -608,7 +866,7 @@ defmodule ExAws.AutoScaling do
     format([{key, parameters}])
   end
 
-  defp convert_to_string(atom) do
+  defp atom_to_string(atom) do
     case Map.get(@special_formatting, atom) do
       nil -> atom |> Atom.to_string() |> Macro.camelize()
       val -> val
