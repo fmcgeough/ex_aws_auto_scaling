@@ -628,6 +628,12 @@ defmodule ExAws.AutoScaling do
           auto_scaling_group_name: binary
         ]
 
+  @type describe_auto_scaling_instances_opts :: [
+          instance_ids: [binary, ...],
+          max_records: integer,
+          next_token: binary
+        ]
+
   @doc """
     Attaches one or more EC2 instances to the specified Auto Scaling group
 
@@ -1061,6 +1067,29 @@ defmodule ExAws.AutoScaling do
           ExAws.Operation.Query.t()
   def describe_auto_scaling_groups(opts \\ []) do
     opts |> build_request(:describe_auto_scaling_groups)
+  end
+
+  @doc """
+    Describes one or more Auto Scaling instances.
+
+  ## Parameters
+
+    * opts (`t:describe_auto_scaling_instances_opts)
+  """
+  @spec describe_auto_scaling_instances() :: ExAws.Operation.Query.t()
+  @spec describe_auto_scaling_instances(opts :: describe_auto_scaling_instances_opts) ::
+          ExAws.Operation.Query.t()
+  def describe_auto_scaling_instances(opts \\ []) do
+    opts |> build_request(:describe_auto_scaling_instances)
+  end
+
+  @doc """
+    Describes the notification types that are supported by Amazon
+    EC2 Auto Scaling
+  """
+  @spec describe_auto_scaling_notification_types() :: ExAws.Operation.Query.t()
+  def describe_auto_scaling_notification_types do
+    request(%{}, :describe_auto_scaling_notification_types)
   end
 
   ####################
