@@ -17,6 +17,8 @@ defmodule ExAws.AutoScaling do
     :availability_zones,
     :classic_link_vpc_security_groups,
     :instance_ids,
+    :launch_configuration_names,
+    :lifecycle_hook_names,
     :load_balancer_names,
     :scheduled_action_names,
     :scheduled_update_group_actions,
@@ -634,6 +636,39 @@ defmodule ExAws.AutoScaling do
           next_token: binary
         ]
 
+  @typedoc """
+   The optional parameters when calling `describe_launch_configurations/1`
+
+  ## Keys
+
+    * launch_configuration_names (List of String) - The launch configuration names. If
+    you omit this parameter, all launch configurations are described.
+
+    * max_records (Integer) - The maximum number of items to return with this call. The
+    default value is 50 and the maximum value is 100.
+
+    * next_token (String) - The token for the next set of items to return. (You received
+    this token from a previous call.)
+  """
+  @type describe_launch_configurations_opts :: [
+          launch_configuration_names: [binary, ...],
+          max_records: integer,
+          next_token: binary
+        ]
+
+  @typedoc """
+   The optional parameters when calling `describe_lifecycle_hooks/2`
+
+  ## Keys
+
+    * lifecycle_hook_names (List of String) - The names of one or more lifecycle
+    hooks. If you omit this parameter, all lifecycle hooks are described.
+
+  """
+  @type describe_lifecycle_hooks_opts :: [
+          lifecycle_hook_names: [binary, ...]
+        ]
+
   @doc """
     Attaches one or more EC2 instances to the specified Auto Scaling group
 
@@ -1090,6 +1125,52 @@ defmodule ExAws.AutoScaling do
   @spec describe_auto_scaling_notification_types() :: ExAws.Operation.Query.t()
   def describe_auto_scaling_notification_types do
     request(%{}, :describe_auto_scaling_notification_types)
+  end
+
+  @doc """
+    Describes one or more launch configurations.
+
+  ## Parameters
+
+    * opts (`t:describe_launch_configurations_opts/0`)
+  """
+  @spec describe_launch_configurations() :: ExAws.Operation.Query.t()
+  @spec describe_launch_configurations(opts :: describe_launch_configurations_opts) ::
+          ExAws.Operation.Query.t()
+  def describe_launch_configurations(opts \\ []) do
+    opts |> build_request(:describe_launch_configurations)
+  end
+
+  @doc """
+    Describes the lifecycle hooks for the specified Auto Scaling group
+
+  ## Parameters
+
+    * auto_scaling_group_name (String) - The name of the Auto Scaling group.
+
+    * opts (`t:describe_lifecycle_hooks_opts/0`)
+  """
+  @spec describe_lifecycle_hooks(auto_scaling_group_name :: binary) :: ExAws.Operation.Query.t()
+  @spec describe_lifecycle_hooks(
+          auto_scaling_group_name :: binary,
+          opts :: describe_lifecycle_hooks_opts
+        ) :: ExAws.Operation.Query.t()
+  def describe_lifecycle_hooks(auto_scaling_group_name, opts \\ []) do
+    [{:auto_scaling_group_name, auto_scaling_group_name} | opts]
+    |> build_request(:describe_lifecycle_hooks)
+  end
+
+  @doc """
+    Describes the available types of lifecycle hooks.
+
+    The following hook types are supported:
+
+      * autoscaling:EC2_INSTANCE_LAUNCHING
+      * autoscaling:EC2_INSTANCE_TERMINATING
+  """
+  @spec describe_lifecycle_hook_types() :: ExAws.Operation.Query.t()
+  def describe_lifecycle_hook_types do
+    request(%{}, :describe_lifecycle_hook_types)
   end
 
   ####################
