@@ -669,6 +669,22 @@ defmodule ExAws.AutoScaling do
           lifecycle_hook_names: [binary, ...]
         ]
 
+  @typedoc """
+   The optional parameters when calling `describe_load_balancers/2`
+
+  ## Keys
+
+    * max_records (Integer) - The maximum number of items to return with this call. The
+    default value is 50 and the maximum value is 100.
+
+    * next_token (String) - The token for the next set of items to return. (You received
+    this token from a previous call.)
+  """
+  @type paging_opts :: [
+          max_records: integer,
+          next_token: binary
+        ]
+
   @doc """
     Attaches one or more EC2 instances to the specified Auto Scaling group
 
@@ -1171,6 +1187,46 @@ defmodule ExAws.AutoScaling do
   @spec describe_lifecycle_hook_types() :: ExAws.Operation.Query.t()
   def describe_lifecycle_hook_types do
     request(%{}, :describe_lifecycle_hook_types)
+  end
+
+  @doc """
+    Describes the load balancers for the specified Auto Scaling group.
+
+    This operation describes only Classic Load Balancers. If you have
+    Application Load Balancers or Network Load Balancers, use
+    `describe_load_balancer_target_groups/2` instead.
+  """
+  @spec describe_load_balancers(auto_scaling_group_name :: binary) :: ExAws.Operation.Query.t()
+  @spec describe_load_balancers(auto_scaling_group_name :: binary, opts :: paging_opts) ::
+          ExAws.Operation.Query.t()
+  def describe_load_balancers(auto_scaling_group_name, opts \\ []) do
+    [{:auto_scaling_group_name, auto_scaling_group_name} | opts]
+    |> build_request(:describe_load_balancers)
+  end
+
+  @doc """
+    Describes the target groups for the specified Auto Scaling group
+  """
+  @spec describe_load_balancer_target_groups(auto_scaling_group_name :: binary) ::
+          ExAws.Operation.Query.t()
+  @spec describe_load_balancer_target_groups(
+          auto_scaling_group_name :: binary,
+          opts :: paging_opts
+        ) :: ExAws.Operation.Query.t()
+  def describe_load_balancer_target_groups(auto_scaling_group_name, opts \\ []) do
+    [{:auto_scaling_group_name, auto_scaling_group_name} | opts]
+    |> build_request(:describe_load_balancer_target_groups)
+  end
+
+  @doc """
+    Describes the available CloudWatch metrics for Amazon EC2 Auto Scaling.
+
+    The GroupStandbyInstances metric is not returned by default. You must
+    explicitly request this metric when calling `enable_metrics_collection/2`.
+  """
+  @spec describe_metric_collection_types() :: ExAws.Operation.Query.t()
+  def describe_metric_collection_types do
+    request(%{}, :describe_metric_collection_types)
   end
 
   ####################
