@@ -8,7 +8,8 @@ defmodule ExAws.AutoScaling do
     classic_link_vpc_id: "ClassicLinkVPCId",
     classic_link_vpc_security_groups: "ClassicLinkVPCSecurityGroups",
     notification_target_arn: "NotificationTargetARN",
-    role_arn: "RoleARN"
+    role_arn: "RoleARN",
+    topic_arn: "TopicARN"
   }
 
   @member_actions [
@@ -914,6 +915,59 @@ defmodule ExAws.AutoScaling do
   def delete_auto_scaling_group(auto_scaling_group_name, opts \\ []) do
     [{:auto_scaling_group_name, auto_scaling_group_name} | opts]
     |> build_request(:delete_auto_scaling_group)
+  end
+
+  @doc """
+    Deletes the specified launch configuration.
+
+    The launch configuration must not be attached to an Auto Scaling group. When
+    this call completes, the launch configuration is no longer available for use.
+
+  ## Parameters
+
+    * launch_configuration_name (String) - The name of the launch configuration.
+  """
+  @spec delete_launch_configuration(launch_configuration_name :: binary) ::
+          ExAws.Operation.Query.t()
+  def delete_launch_configuration(launch_configuration_name) do
+    [{:launch_configuration_name, launch_configuration_name}]
+    |> build_request(:delete_launch_configuration)
+  end
+
+  @doc """
+    Deletes the specified lifecycle hook.
+
+    If there are any outstanding lifecycle actions, they are completed
+    first (ABANDON for launching instances, CONTINUE for terminating instances).
+
+  ## Parameters
+
+    * auto_scaling_group_name (String) - The name of the Auto Scaling group.
+
+    * lifecycle_hook_name (String) - The name of the lifecycle hook.
+  """
+  @spec delete_lifecycle_hook(auto_scaling_group_name :: binary, lifecycle_hook_name :: binary) ::
+          ExAws.Operation.Query.t()
+  def delete_lifecycle_hook(auto_scaling_group_name, lifecycle_hook_name) do
+    [auto_scaling_group_name: auto_scaling_group_name, lifecycle_hook_name: lifecycle_hook_name]
+    |> build_request(:delete_lifecycle_hook)
+  end
+
+  @doc """
+    Deletes the specified notification
+
+  ## Parameters
+
+    * auto_scaling_group_name (String) - The name of the Auto Scaling group.
+
+    * topic_arn (String) - The Amazon Resource Name (ARN) of the Amazon Simple
+    Notification Service (Amazon SNS) topic.
+  """
+  @spec delete_notification_configuration(auto_scaling_group_name :: binary, topic_arn :: binary) ::
+          ExAws.Operation.Query.t()
+  def delete_notification_configuration(auto_scaling_group_name, topic_arn) do
+    [auto_scaling_group_name: auto_scaling_group_name, topic_arn: topic_arn]
+    |> build_request(:delete_notification_configuration)
   end
 
   @doc """
