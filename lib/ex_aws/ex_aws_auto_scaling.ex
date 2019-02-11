@@ -64,6 +64,36 @@ defmodule ExAws.AutoScaling do
           instance_ids: [binary, ...]
         ]
 
+  @typedoc """
+    Describes one or more scheduled scaling action updates for a specified
+    Auto Scaling group. Used in combination with `batch_put_scheduled_update_group_action/2`.
+
+  ## Keys
+
+    * desired_capacity (Integer) - The number of EC2 instances that should be running in the group.
+
+    * end_time (String) - The time for the recurring schedule to end. Amazon EC2 Auto Scaling
+    does not perform the action after this time.
+
+    * max_size (Integer) - The maximum size of the group.
+
+    * min_size (Integer) - The minimum size of the group.
+
+    * recurrence (String) - The recurring schedule for the action, in Unix cron syntax format.
+    This format consists of five fields separated by white spaces:
+    [Minute] [Hour] [Day_of_Month] [Month_of_Year] [Day_of_Week].
+    The value must be in quotes (for example, "30 0 1 1,6,12 *"). For more information about
+    this format, see Crontab.
+
+    * start_time (String) - The time for the action to start, in YYYY-MM-DDThh:mm:ssZ
+    format in UTC/GMT only and in quotes (for example, "2019-06-01T00:00:00Z").
+    If you specify recurrence and start_time, Amazon EC2 Auto Scaling performs the action
+    at this time, and then performs the action based on the specified recurrence.
+    If you try to schedule the action in the past, Amazon EC2 Auto Scaling returns an
+    error message.
+
+    * scheduled_action_name (String) - The name of the scaling action.
+  """
   @type scheduled_update_group_action_request :: [
           desired_capacity: integer,
           end_time: binary,
@@ -73,10 +103,15 @@ defmodule ExAws.AutoScaling do
           start_time: binary,
           scheduled_action_name: binary
         ]
+
+  @typedoc """
+    One or more scheduled actions. The maximum number allowed is 50.
+    See `batch_put_scheduled_update_group_action/2`
+  """
   @type scheduled_update_group_actions :: [scheduled_update_group_action_request, ...]
 
   @typedoc """
-    The optional parameters to `complete_life_cycle_action/4`
+    The optional parameters when calling `complete_life_cycle_action/4`
 
   ## Members
 
@@ -92,7 +127,28 @@ defmodule ExAws.AutoScaling do
           instance_id: binary
         ]
 
-  @type launch_template_id :: [
+  @typedoc """
+    Describes a launch template and the launch template version
+
+    The launch template that is specified must be configured for use with an Auto
+    Scaling group. For more information, see Creating a Launch Template for an Auto
+    Scaling group in the Amazon EC2 Auto Scaling User Guide.
+
+  ## Keys
+
+    * launch_template_id (String) - The ID of the launch template. You must specify
+    either a template ID or a template name.
+
+    * launch_template_name (String) - The name of the launch template. You must specify
+    either a template name or a template ID.
+
+    * version (String) - The version number, "$Latest", or "$Default". If the value is
+    "$Latest", Amazon EC2 Auto Scaling selects the latest version of the launch template
+    when launching instances. If the value is "$Default", Amazon EC2 Auto Scaling selects
+    the default version of the launch template when launching instances. The default value
+    is "$Default".
+  """
+  @type launch_template_specification :: [
           launch_template_id: binary,
           launch_template_name: binary,
           version: binary
@@ -189,35 +245,6 @@ defmodule ExAws.AutoScaling do
           spot_allocation_strategy: binary,
           spot_instance_pools: integer,
           spot_max_price: binary
-        ]
-
-  @typedoc """
-    Describes a launch template and the launch template version.
-
-    The launch template that is specified must be configured for use with an
-    Auto Scaling group. For more information, see Creating a Launch Template
-    for an Auto Scaling group in the Amazon EC2 Auto Scaling User Guide.
-
-  ## Keys
-
-    * launch_template_id (String) - The ID of the launch template. You must specify
-    either a template ID or a template name. Length Constraints: Minimum length
-    of 1. Maximum length of 255.
-
-    * launch_template_name (String) - The name of the launch template. You must specify
-    either a template name or a template ID. Length Constraints: Minimum length of 3.
-    Maximum length of 128.
-
-    * version (String) - The version number, "$Latest", or "$Default". If the value is
-    "$Latest", Amazon EC2 Auto Scaling selects the latest version of the launch template
-    when launching instances. If the value is "$Default", Amazon EC2 Auto Scaling selects
-    the default version of the launch template when launching instances. The default
-    value is "$Default".
-  """
-  @type launch_template_specification :: [
-          launch_template_id: binary,
-          launch_template_name: binary,
-          version: binary
         ]
 
   @typedoc """
@@ -384,7 +411,7 @@ defmodule ExAws.AutoScaling do
           health_check_type: binary,
           instance_id: binary,
           launch_configuration_name: binary,
-          launch_template: launch_template_id,
+          launch_template: launch_template_specification,
           lifecycle_hook_specification_list: [lifecycle_hook_specification, ...],
           load_balancer_names: [binary, ...],
           mixed_instances_policy: mixed_instances_policy,
@@ -467,7 +494,7 @@ defmodule ExAws.AutoScaling do
         ]
 
   @typedoc """
-    The optional parameters when calling `create_launch_configuration/3`
+    The optional parameters when calling `create_launch_configuration/2`
 
   ## Keys
 
@@ -552,6 +579,8 @@ defmodule ExAws.AutoScaling do
 
     * user_data (String) - The user data to make available to the launched EC2 instances. For more
     information, see Instance Metadata and User Data in the Amazon EC2 User Guide for Linux Instances.
+    This value will be base64 encoded automatically. Do not base64 encode this value prior to performing
+    the operation.
   """
   @type create_launch_configuration_opts :: [
           associate_public_ip_address: boolean,
@@ -804,6 +833,13 @@ defmodule ExAws.AutoScaling do
 
     For more information, see Launch Configurations in the Amazon EC2 Auto
     Scaling User Guide.
+
+  ## Parameters
+
+    * launch_configuration_name (String) - The name of the launch configuration.
+    This name must be unique within the scope of your AWS account.
+
+    * opts (`t:create_launch_configuration_opts/0`) - optional parameters
   """
   @spec create_launch_configuration(
           launch_configuration_name :: binary,
@@ -812,6 +848,24 @@ defmodule ExAws.AutoScaling do
   def create_launch_configuration(launch_configuration_name, opts) do
     [{:launch_configuration_name, launch_configuration_name} | opts]
     |> build_request(:create_launch_configuration)
+  end
+
+  @doc """
+    Creates or updates tags for the specified Auto Scaling group.
+
+    When you specify a tag with a key that already exists, the operation overwrites
+    the previous tag definition, and you do not get an error message.
+
+    For more information, see Tagging Auto Scaling Groups and Instances in the Amazon
+    EC2 Auto Scaling User Guide.
+
+  ## Parameters
+
+    * tags (List of `t:tag/0`) - One or more tags.
+  """
+  def create_or_update_tags(tags) do
+    [tags: tags]
+    |> build_request(:create_or_update_tags)
   end
 
   @doc """
