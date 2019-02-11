@@ -602,6 +602,20 @@ defmodule ExAws.AutoScaling do
           user_data: binary
         ]
 
+  @typedoc """
+   The optional parameters when calling `delete_auto_scaling_group/2`
+
+  ## Keys
+
+    * force_delete (Boolean) - Specifies that the group is to be deleted
+    along with all instances associated with the group, without waiting for
+    all instances to be terminated. This parameter also deletes any lifecycle
+    actions associated with the group.
+  """
+  @type delete_auto_scaling_group_opts :: [
+          force_delete: boolean
+        ]
+
   @doc """
     Attaches one or more EC2 instances to the specified Auto Scaling group
 
@@ -866,6 +880,40 @@ defmodule ExAws.AutoScaling do
   def create_or_update_tags(tags) do
     [tags: tags]
     |> build_request(:create_or_update_tags)
+  end
+
+  @doc """
+    Deletes the specified Auto Scaling group.
+
+    If the group has instances or scaling activities in progress, you must
+    specify the option to force the deletion in order for it to succeed.
+
+    If the group has policies, deleting the group deletes the policies, the
+    underlying alarm actions, and any alarm that no longer has an associated action.
+
+    To remove instances from the Auto Scaling group before deleting it, call
+    `detach_instances/1` with the list of instances and the option to decrement
+    the desired capacity. This ensures that Amazon EC2 Auto Scaling does not launch
+    replacement instances.
+
+    To terminate all instances before deleting the Auto Scaling group, call
+    `update_auto_scaling_group/1` and set the minimum size and desired capacity
+    of the Auto Scaling group to zero.
+
+  ## Parameters
+
+    * auto_scaling_group_name (String) - The name of the Auto Scaling group.
+
+    * opts (`t:delete_auto_scaling_group_opts`)
+  """
+  @spec delete_auto_scaling_group(auto_scaling_group_name :: binary) :: ExAws.Operation.Query.t()
+  @spec delete_auto_scaling_group(
+          auto_scaling_group_name :: binary,
+          opts :: delete_auto_scaling_group_opts
+        ) :: ExAws.Operation.Query.t()
+  def delete_auto_scaling_group(auto_scaling_group_name, opts \\ []) do
+    [{:auto_scaling_group_name, auto_scaling_group_name} | opts]
+    |> build_request(:delete_auto_scaling_group)
   end
 
   @doc """
