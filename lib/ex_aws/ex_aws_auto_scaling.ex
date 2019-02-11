@@ -617,6 +617,17 @@ defmodule ExAws.AutoScaling do
           force_delete: boolean
         ]
 
+  @typedoc """
+   The optional parameters when calling `delete_policy/2`
+
+  ## Keys
+
+    * auto_scaling_group_name (String) - The name of the Auto Scaling group
+  """
+  @type delete_policy_opts :: [
+          auto_scaling_group_name: binary
+        ]
+
   @doc """
     Attaches one or more EC2 instances to the specified Auto Scaling group
 
@@ -968,6 +979,78 @@ defmodule ExAws.AutoScaling do
   def delete_notification_configuration(auto_scaling_group_name, topic_arn) do
     [auto_scaling_group_name: auto_scaling_group_name, topic_arn: topic_arn]
     |> build_request(:delete_notification_configuration)
+  end
+
+  @doc """
+    Deletes the specified Auto Scaling policy.
+
+    Deleting a policy deletes the underlying alarm action, but does not
+    delete the alarm, even if it no longer has an associated action.
+
+  ## Parameters
+
+    * policy_name (String) - The name or Amazon Resource Name (ARN) of the policy.
+
+    * opts (`t:delete_policy_opts/0`)
+  """
+  @spec delete_policy(policy_name :: binary) :: ExAws.Operation.Query.t()
+  @spec delete_policy(policy_name :: binary, opts :: delete_policy_opts) ::
+          ExAws.Operation.Query.t()
+  def delete_policy(policy_name, opts \\ []) do
+    [{:policy_name, policy_name} | opts]
+    |> build_request(:delete_policy)
+  end
+
+  @doc """
+    Deletes the specified scheduled action
+
+  ## Parameters
+
+    * auto_scaling_group_name (String) - The name of the Auto Scaling group.
+
+    * scheduled_action_name (String) - The name of the action to delete
+  """
+  @spec delete_scheduled_action(
+          auto_scaling_group_name :: binary,
+          scheduled_action_name :: binary
+        ) :: ExAws.Operation.Query.t()
+  def delete_scheduled_action(auto_scaling_group_name, scheduled_action_name) do
+    [
+      {:auto_scaling_group_name, auto_scaling_group_name},
+      {:scheduled_action_name, scheduled_action_name}
+    ]
+    |> build_request(:delete_scheduled_action)
+  end
+
+  @doc """
+    Deletes the specified tags.
+
+  ## Parameters
+
+    * tags (List of `t:tag/0`) - One or more tags.
+  """
+  @spec delete_tags(tags :: [tag, ...]) :: ExAws.Operation.Query.t()
+  def delete_tags(tags) do
+    [{:tags, tags}]
+    |> build_request(:delete_tags)
+  end
+
+  @doc """
+    Describes the current Auto Scaling resource limits for your AWS account.
+
+    For information about requesting an increase in these limits, see Amazon
+    EC2 Auto Scaling Limits in the Amazon EC2 Auto Scaling User Guide.
+  """
+  @spec describe_account_limits() :: ExAws.Operation.Query.t()
+  def describe_account_limits do
+    request(%{}, :describe_account_limits)
+  end
+
+  @doc """
+    Describes the policy adjustment types for use with `put_scaling_policy/2`
+  """
+  def describe_adjustment_types do
+    request(%{}, :describe_adjustment_types)
   end
 
   @doc """
