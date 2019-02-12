@@ -685,6 +685,70 @@ defmodule ExAws.AutoScaling do
           next_token: binary
         ]
 
+  @typedoc """
+   The optional parameters when calling `describe_notification_configurations/1`
+
+  ## Keys
+
+    * auto_scaling_group_names (List of String) - The name of the Auto Scaling group
+
+    * max_records (Integer) - The maximum number of items to return with this call. The
+    default value is 50 and the maximum value is 100.
+
+    * next_token (String) - The token for the next set of items to return. (You received
+    this token from a previous call.)
+  """
+  @type describe_notification_configurations_opts :: [
+          auto_scaling_group_names: [binary, ...],
+          max_records: integer,
+          next_token: binary
+        ]
+
+  @type describe_policies_opts :: [
+          auto_scaling_group_name: binary,
+          max_records: integer,
+          next_token: binary
+        ]
+
+  @type describe_scaling_activities_opts :: [
+          auto_scaling_group_name: binary,
+          max_records: integer,
+          next_token: binary
+        ]
+
+  @typedoc """
+   The optional parameters when calling `describe_scheduled_actions/1`
+
+  ## Keys
+
+    * auto_scaling_group_name (String) - The name of the Auto Scaling group
+
+    * end_time (String) - The latest scheduled start time to return. If
+    scheduled action names are provided, this parameter is ignored.
+
+    * max_records (Integer) - The maximum number of items to return with this call. The
+    default value is 50 and the maximum value is 100.
+
+    * next_token (String) - The token for the next set of items to return. (You received
+    this token from a previous call.)
+
+    * scheduled_action_names (List of String) - The names of one or more scheduled
+    actions. You can specify up to 50 actions. If you omit this parameter, all
+    scheduled actions are described. If you specify an unknown scheduled action,
+    it is ignored with no error.
+
+    * start_time (String) - The earliest scheduled start time to return. If
+    scheduled action names are provided, this parameter is ignored.
+  """
+  @type describe_scheduled_actions_opts :: [
+          auto_scaling_group_name: binary,
+          end_time: binary,
+          max_records: integer,
+          next_token: binary,
+          scheduled_action_names: [binary, ...],
+          start_time: binary
+        ]
+
   @doc """
     Attaches one or more EC2 instances to the specified Auto Scaling group
 
@@ -1227,6 +1291,70 @@ defmodule ExAws.AutoScaling do
   @spec describe_metric_collection_types() :: ExAws.Operation.Query.t()
   def describe_metric_collection_types do
     request(%{}, :describe_metric_collection_types)
+  end
+
+  @doc """
+    Describes the notification actions associated with the specified
+    Auto Scaling group.
+
+  ## Parameters
+
+    * opts (`t:describe_notification_configurations/0`)
+  """
+  @spec describe_notification_configurations() :: ExAws.Operation.Query.t()
+  @spec describe_notification_configurations(opts :: describe_notification_configurations_opts) ::
+          ExAws.Operation.Query.t()
+  def describe_notification_configurations(opts \\ []) do
+    opts
+    |> build_request(:describe_notification_configurations)
+  end
+
+  @doc """
+    Describes the policies for the specified Auto Scaling group
+
+  ## Parameters
+
+    * opts (`t:describe_policies_opts`)
+  """
+  @spec describe_policies() :: ExAws.Operation.Query.t()
+  @spec describe_policies(opts :: describe_policies_opts) :: ExAws.Operation.Query.t()
+  def describe_policies(opts \\ []) do
+    opts
+    |> build_request(:describe_policies)
+  end
+
+  @doc """
+    Describes one or more scaling activities for the specified Auto Scaling group.
+
+  ## Parameters
+
+    * opts (`t:describe_scaling_activities_opts/0`)
+  """
+  @spec describe_scaling_activities() :: ExAws.Operation.Query.t()
+  @spec describe_scaling_activities(opts :: describe_scaling_activities_opts) ::
+          ExAws.Operation.Query.t()
+  def describe_scaling_activities(opts \\ []) do
+    opts
+    |> build_request(:describe_scaling_activities)
+  end
+
+  @doc """
+    Describes the scaling process types for use with `resume_processes/2` and
+    `suspend_processes/2`.
+  """
+  @spec describe_scaling_process_types() :: ExAws.Operation.Query.t()
+  def describe_scaling_process_types do
+    request(%{}, :describe_scaling_process_types)
+  end
+
+  @doc """
+    Describes the actions scheduled for your Auto Scaling group
+    that haven't run. To describe the actions that have already
+    run, use `describe_scaling_activities/2`.
+  """
+  def describe_scheduled_actions(opts \\ []) do
+    opts
+    |> build_request(:describe_scheduled_actions)
   end
 
   ####################
