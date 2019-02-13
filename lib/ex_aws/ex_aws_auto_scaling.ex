@@ -9,13 +9,15 @@ defmodule ExAws.AutoScaling do
     classic_link_vpc_security_groups: "ClassicLinkVPCSecurityGroups",
     notification_target_arn: "NotificationTargetARN",
     role_arn: "RoleARN",
-    topic_arn: "TopicARN"
+    topic_arn: "TopicARN",
+    values: "Values.member"
   }
 
   @member_actions [
     :auto_scaling_group_names,
     :availability_zones,
     :classic_link_vpc_security_groups,
+    :filters,
     :instance_ids,
     :launch_configuration_names,
     :lifecycle_hook_names,
@@ -38,15 +40,15 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-  * auto_scaling_group_names (List of String) - The names of the Auto Scaling groups.
+  * auto_scaling_group_names (`List` of `String`) - The names of the Auto Scaling groups.
   Each name can be a maximum of 1600 characters. By default, you can only specify up
   to 50 names. You can optionally increase this limit using the MaxRecords parameter.
   If you omit this parameter, all Auto Scaling groups are described.
 
-  * max_records (Integer) - The maximum number of items to return with this call. The
+  * max_records (`Integer`) - The maximum number of items to return with this call. The
   default value is 50 and the maximum value is 100.
 
-  * next_token (String) - The token for the next set of items to return. (You received
+  * next_token (`String`) - The token for the next set of items to return. (You received
   this token from a previous call.)
   """
   @type describe_auto_scaling_groups_opts :: [
@@ -60,7 +62,7 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-   * instance_ids (List of String) - The IDs of the instances. You can
+   * instance_ids (`List` of `String`) - The IDs of the instances. You can
    specify up to 20 instances. Minimum length of 1. Maximum length of 19.
   """
   @type attach_instances_opts :: [
@@ -73,29 +75,29 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * desired_capacity (Integer) - The number of EC2 instances that should be running in the group.
+    * desired_capacity (`Integer`) - The number of EC2 instances that should be running in the group.
 
-    * end_time (String) - The time for the recurring schedule to end. Amazon EC2 Auto Scaling
+    * end_time (`String`) - The time for the recurring schedule to end. Amazon EC2 Auto Scaling
     does not perform the action after this time.
 
-    * max_size (Integer) - The maximum size of the group.
+    * max_size (`Integer`) - The maximum size of the group.
 
-    * min_size (Integer) - The minimum size of the group.
+    * min_size (`Integer`) - The minimum size of the group.
 
-    * recurrence (String) - The recurring schedule for the action, in Unix cron syntax format.
+    * recurrence (`String`) - The recurring schedule for the action, in Unix cron syntax format.
     This format consists of five fields separated by white spaces:
     [Minute] [Hour] [Day_of_Month] [Month_of_Year] [Day_of_Week].
     The value must be in quotes (for example, "30 0 1 1,6,12 *"). For more information about
     this format, see Crontab.
 
-    * start_time (String) - The time for the action to start, in YYYY-MM-DDThh:mm:ssZ
+    * start_time (`String`) - The time for the action to start, in YYYY-MM-DDThh:mm:ssZ
     format in UTC/GMT only and in quotes (for example, "2019-06-01T00:00:00Z").
     If you specify recurrence and start_time, Amazon EC2 Auto Scaling performs the action
     at this time, and then performs the action based on the specified recurrence.
     If you try to schedule the action in the past, Amazon EC2 Auto Scaling returns an
     error message.
 
-    * scheduled_action_name (String) - The name of the scaling action.
+    * scheduled_action_name (`String`) - The name of the scaling action.
   """
   @type scheduled_update_group_action_request :: [
           desired_capacity: integer,
@@ -118,12 +120,12 @@ defmodule ExAws.AutoScaling do
 
   ## Members
 
-    * lifecycle_action_token (String) - A universally unique identifier (UUID) that
+    * lifecycle_action_token (`String`) - A universally unique identifier (UUID) that
     identifies a specific lifecycle action associated with an instance. Amazon EC2
     Auto Scaling sends this token to the notification target you specified when you
     created the lifecycle hook.
 
-    * instance_id (String) - The ID of the instance.
+    * instance_id (`String`) - The ID of the instance.
   """
   @type complete_life_cycle_action_opts :: [
           lifecycle_action_token: binary,
@@ -139,13 +141,13 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * launch_template_id (String) - The ID of the launch template. You must specify
+    * launch_template_id (`String`) - The ID of the launch template. You must specify
     either a template ID or a template name.
 
-    * launch_template_name (String) - The name of the launch template. You must specify
+    * launch_template_name (`String`) - The name of the launch template. You must specify
     either a template name or a template ID.
 
-    * version (String) - The version number, "$Latest", or "$Default". If the value is
+    * version (`String`) - The version number, "$Latest", or "$Default". If the value is
     "$Latest", Amazon EC2 Auto Scaling selects the latest version of the launch template
     when launching instances. If the value is "$Default", Amazon EC2 Auto Scaling selects
     the default version of the launch template when launching instances. The default value
@@ -168,28 +170,28 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * default_result (String) - Defines the action the Auto Scaling group
+    * default_result (`String`) - Defines the action the Auto Scaling group
     should take when the lifecycle hook timeout elapses or if an unexpected
     failure occurs. The valid values are "CONTINUE" and "ABANDON".
 
-    * heartbeat_timeout (Integer) - The maximum time, in seconds, that can
+    * heartbeat_timeout (`Integer`) - The maximum time, in seconds, that can
     elapse before the lifecycle hook times out. If the lifecycle hook times
     out, Amazon EC2 Auto Scaling performs the action that you specified in the
     default_result parameter. You can prevent the lifecycle hook from timing
     out by calling `record_lifecycle_action_heartbeat/2`.
 
-    * lifecycle_hook_name (String) - The name of the lifecycle hook.
+    * lifecycle_hook_name (`String`) - The name of the lifecycle hook.
 
-    * lifecycle_transition (String) - The state of the EC2 instance to which you
+    * lifecycle_transition (`String`) - The state of the EC2 instance to which you
     want to attach the lifecycle hook. The possible values are:
     "autoscaling:EC2_INSTANCE_LAUNCHING" | "autoscaling:EC2_INSTANCE_TERMINATING"
 
-    * notification_target_arn (String) - The ARN of the target that Amazon EC2
+    * notification_target_arn (`String`) - The ARN of the target that Amazon EC2
     Auto Scaling sends notifications to when an instance is in the transition state
     for the lifecycle hook. The notification target can be either an SQS queue or
     an SNS topic.
 
-    * role_arn (String) - The ARN of the IAM role that allows the Auto Scaling group
+    * role_arn (`String`) - The ARN of the IAM role that allows the Auto Scaling group
     to publish to the specified notification target, for example, an Amazon SNS
     topic or an Amazon SQS queue
   """
@@ -208,7 +210,7 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * on_demand_allocation_strategy (String) - Indicates how to allocate instance types to
+    * on_demand_allocation_strategy (`String`) - Indicates how to allocate instance types to
     fulfill On-Demand capacity. The only valid value is "prioritized", which is also the
     default value. This strategy uses the order of instance type overrides for the
     launch_template to define the launch priority of each instance type. The first instance
@@ -216,27 +218,27 @@ defmodule ExAws.AutoScaling do
     cannot be fulfilled using your highest priority instance, then the Auto Scaling groups
     launches the remaining capacity using the second priority instance type, and so on.
 
-    * on_demand_base_capacity (Integer) - The minimum amount of the Auto Scaling group's
+    * on_demand_base_capacity (`Integer`) - The minimum amount of the Auto Scaling group's
     capacity that must be fulfilled by On-Demand Instances. This base portion is provisioned
     first as your group scales. The default value is 0. If you leave this parameter set to
     0, On-Demand Instances are launched as a percentage of the Auto Scaling group's desired
     capacity, per the on_demand_percentage_above_base_capacity setting.
 
-    * on_demand_percentage_above_base_capacity (Integer) - Controls the percentages of On-Demand
+    * on_demand_percentage_above_base_capacity (`Integer`) - Controls the percentages of On-Demand
     Instances and Spot Instances for your additional capacity beyond on_demand_base_capacity.
     The range is 0–100. The default value is 100. If you leave this parameter set to 100, the
     percentages are 100% for On-Demand Instances and 0% for Spot Instances.
 
-    * spot_allocation_strategy (String) - Indicates how to allocate Spot capacity across Spot pools.
+    * spot_allocation_strategy (`String`) - Indicates how to allocate Spot capacity across Spot pools.
     The only valid value is "lowest-price", which is also the default value. The Auto Scaling group
     selects the cheapest Spot pools and evenly allocates your Spot capacity across the number of
     Spot pools that you specify.
 
-    * spot_instance_pools (Integer) - The number of Spot pools to use to allocate your Spot capacity.
+    * spot_instance_pools (`Integer`) - The number of Spot pools to use to allocate your Spot capacity.
     The Spot pools are determined from the different instance types in the Overrides array of
     launch_template. The range is 1–20 and the default is 2.
 
-    * spot_max_price (String) - The maximum price per unit hour that you are willing to pay for a
+    * spot_max_price (`String`) - The maximum price per unit hour that you are willing to pay for a
     Spot Instance. If you leave the value of this parameter blank (which is the default), the
     maximum Spot price is set at the On-Demand price. To remove a value that you previously set,
     include the parameter but leave the value blank.
@@ -311,17 +313,17 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * key (String) - The tag key. Length Constraints: Minimum length of 1. Maximum length of 128.
+    * key (`String`) - The tag key. Length Constraints: Minimum length of 1. Maximum length of 128.
     Required.
 
-    * propagate_at_launch (Boolean) - Determines whether the tag is added to new instances as
+    * propagate_at_launch (boolean) - Determines whether the tag is added to new instances as
     they are launched in the group.
 
-    * resource_id (String) - The name of the group.
+    * resource_id (`String`) - The name of the group.
 
-    * resource_type (String) - The type of resource. The only supported value is "auto-scaling-group".
+    * resource_type (`String`) - The type of resource. The only supported value is "auto-scaling-group".
 
-    * value (String) - The tag value. Length Constraints: Minimum length of 0. Maximum length of 256.
+    * value (`String`) - The tag value. Length Constraints: Minimum length of 0. Maximum length of 256.
 
   """
   @type tag :: [
@@ -337,31 +339,31 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * availability_zones (List) - One or more Availability Zones for
+    * availability_zones (`List`) - One or more Availability Zones for
     the group. This parameter is optional if you specify one
     or more subnets. Minimum number of 1 item. Maximum number
     is 255.
 
-    * default_cool_down (Integer) - The amount of time, in seconds,
+    * default_cool_down (`Integer`) - The amount of time, in seconds,
     after a scaling activity completes before another scaling
     activity can start. The default value is 300.
 
-    * desired_capacity (Integer) - The number of EC2 instances that
+    * desired_capacity (`Integer`) - The number of EC2 instances that
     should be running in the group. This number must be greater than
     or equal to the minimum size of the group and less than or equal
     to the maximum size of the group. If you do not specify a desired
     capacity, the default is the minimum size of the group.
 
-    * health_check_grace_period (Integer) - The amount of time, in seconds,
+    * health_check_grace_period (`Integer`) - The amount of time, in seconds,
     that Amazon EC2 Auto Scaling waits before checking the health status of
     an EC2 instance that has come into service. During this time, any health
     check failures for the instance are ignored. The default value is 0.
     This parameter is required if you are adding an ELB health check.
 
-    * health_check_type (String) - The service to use for the health checks.
+    * health_check_type (`String`) - The service to use for the health checks.
     The valid values are "EC2" and "ELB".
 
-    * launch_configuration_name (String) - The name of the launch configuration.
+    * launch_configuration_name (`String`) - The name of the launch configuration.
     This parameter, a launch template, a mixed instances policy, or an EC2
     instance must be specified.
 
@@ -379,26 +381,26 @@ defmodule ExAws.AutoScaling do
     This parameter, a launch template, a launch configuration, or an EC2 instance
     must be specified.
 
-    * new_instances_protected_from_scale_in (Boolean) - Indicates whether newly launched
+    * new_instances_protected_from_scale_in (boolean) - Indicates whether newly launched
     instances are protected from termination by Auto Scaling when scaling in.
     For more information about preventing instances from terminating on scale in, see
     Instance Protection in the Amazon EC2 Auto Scaling User Guide.
 
-    * placement_group (String) - The name of the placement group into which to launch
+    * placement_group (`String`) - The name of the placement group into which to launch
     your instances, if any. For more information, see Placement Groups in the Amazon
     EC2 User Guide for Linux Instances.
 
-    * service_linked_role_arn (String) - The Amazon Resource Name (ARN) of the service-linked
+    * service_linked_role_arn (`String`) - The Amazon Resource Name (ARN) of the service-linked
     role that the Auto Scaling group uses to call other AWS services on your behalf. By default,
     Amazon EC2 Auto Scaling uses a service-linked role named AWSServiceRoleForAutoScaling,
     which it creates if it does not exist. For more information, see Service-Linked Roles in
     the Amazon EC2 Auto Scaling User Guide.
 
-    * tags (List of Tag) - One or more tags
+    * tags (`List` of Tag) - One or more tags
 
-    * target_group_arns (List of String) - The Amazon Resource Names (ARN) of the target groups.
+    * target_group_arns (`List` of String) - The Amazon Resource Names (ARN) of the target groups.
 
-    * termination_policies (List of String) - One or more termination policies used to select the
+    * termination_policies (`List` of String) - One or more termination policies used to select the
     instance to terminate. These policies are executed in the order that they are listed. For more
     information, see "Controlling Which Instances Auto Scaling Terminates During Scale In" in the
     Amazon EC2 Auto Scaling User Guide.
@@ -432,10 +434,10 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * delete_on_termination (Boolean) - Indicates whether the volume is deleted on
+    * delete_on_termination (boolean) - Indicates whether the volume is deleted on
     instance termination. The default value is true.
 
-    * encrypted (Boolean) - Specifies whether the volume should be encrypted.
+    * encrypted (boolean) - Specifies whether the volume should be encrypted.
     Encrypted EBS volumes must be attached to instances that support Amazon EBS
     encryption. Volumes that are created from encrypted snapshots are automatically
     encrypted. There is no way to create an encrypted volume from an unencrypted
@@ -443,22 +445,22 @@ defmodule ExAws.AutoScaling do
     encrypted volumes, you can only launch it on supported instance types. For more
     information, see Amazon EBS Encryption in the Amazon EC2 User Guide for Linux Instances.
 
-    * iops (Integer) - The number of I/O operations per second (IOPS) to provision for
+    * iops (`Integer`) - The number of I/O operations per second (IOPS) to provision for
     the volume. For more information, see Amazon EBS Volume Types in the Amazon EC2 User
     Guide for Linux Instances. Constraint: Required when the volume type is io1. (Not
     used with standard, gp2, st1, or sc1 volumes.) Valid Range: Minimum value of 100.
     Maximum value of 20000.
 
-    * snapshot_id (String) - The ID of the snapshot. This parameter is optional if you
+    * snapshot_id (`String`) - The ID of the snapshot. This parameter is optional if you
     specify a volume size.
 
-    * volume_size (Integer) - The volume size, in GiB. Constraints: 1-1,024 for standard,
+    * volume_size (`Integer`) - The volume size, in GiB. Constraints: 1-1,024 for standard,
     4-16,384 for io1, 1-16,384 for gp2, and 500-16,384 for st1 and sc1. If you specify a
     snapshot, the volume size must be equal to or larger than the snapshot size.
     Default: If you create a volume from a snapshot and you don't specify a volume size,
     the default is the snapshot size. Valid Range: Minimum value of 1. Maximum value of 16384.
 
-    * volume_type (String) - The volume type, which can be "standard" for Magnetic, "io1" for
+    * volume_type (`String`) - The volume type, which can be "standard" for Magnetic, "io1" for
     Provisioned IOPS SSD, "gp2" for General Purpose SSD, "st1" for Throughput Optimized HDD,
     or "sc1" for Cold HDD. For more information, see Amazon EBS Volume Types in the Amazon
     EC2 User Guide for Linux Instances.
@@ -477,17 +479,17 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * device_name (String) - The device name exposed to the EC2 instance (for
+    * device_name (`String`) - The device name exposed to the EC2 instance (for
     example, /dev/sdh or xvdh). For more information, see Device Naming on Linux
     Instances in the Amazon EC2 User Guide for Linux Instances.
 
     * ebs - The information about the Amazon EBS volume.
 
-    * no_device (Boolean) - Suppresses a device mapping. If this parameter is true for
+    * no_device (boolean) - Suppresses a device mapping. If this parameter is true for
     the root device, the instance might fail the EC2 health check. In that case,
     Amazon EC2 Auto Scaling launches a replacement instance.
 
-    * virtual_name (String) - The name of the virtual device (for example, ephemeral0).
+    * virtual_name (`String`) - The name of the virtual device (for example, ephemeral0).
   """
   @type block_device_mapping :: [
           device_name: binary,
@@ -501,7 +503,7 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * associate_public_ip_address (Boolean) - Used for groups that launch instances into a virtual
+    * associate_public_ip_address (boolean) - Used for groups that launch instances into a virtual
     private cloud (VPC). Specifies whether to assign a public IP address to each instance.
     For more information, see Launching Auto Scaling Instances in a VPC in the Amazon EC2
     Auto Scaling User Guide. If you specify this parameter, be sure to specify at least
@@ -509,78 +511,78 @@ defmodule ExAws.AutoScaling do
     default subnet, the default is to assign a public IP address. If the instance is launched
     into a nondefault subnet, the default is not to assign a public IP address.
 
-    * block_device_mappings (List of `t:block_device_mapping/0`) - One or more mappings that
+    * block_device_mappings (`List` of `t:block_device_mapping/0`) - One or more mappings that
     specify how block devices are exposed to the instance. For more information, see Block
     Device Mapping in the Amazon EC2 User Guide for Linux Instances.
 
-    * classic_link_vpc_id (String) - The ID of a ClassicLink-enabled VPC to link your EC2-Classic
+    * classic_link_vpc_id (`String`) - The ID of a ClassicLink-enabled VPC to link your EC2-Classic
     instances to. This parameter is supported only if you are launching EC2-Classic instances. For
     more information, see ClassicLink in the Amazon EC2 User Guide for Linux Instances and Linking
     EC2-Classic Instances to a VPC in the Amazon EC2 Auto Scaling User Guide.
 
-    * classic_link_vpc_security_groups (List of String) - The IDs of one or more security groups
+    * classic_link_vpc_security_groups (`List` of String) - The IDs of one or more security groups
     for the specified ClassicLink-enabled VPC. This parameter is required if you specify a
     ClassicLink-enabled VPC, and is not supported otherwise. For more information, see ClassicLink
     in the Amazon EC2 User Guide for Linux Instances and Linking EC2-Classic Instances to a VPC in
     the Amazon EC2 Auto Scaling User Guide.
 
-    * ebs_optimized (Boolean) - Indicates whether the instance is optimized for Amazon EBS I/O.
+    * ebs_optimized (boolean) - Indicates whether the instance is optimized for Amazon EBS I/O.
     By default, the instance is not optimized for EBS I/O. The optimization provides dedicated
     throughput to Amazon EBS and an optimized configuration stack to provide optimal I/O performance.
     This optimization is not available with all instance types. Additional usage charges apply.
     For more information, see Amazon EBS-Optimized Instances in the Amazon EC2 User Guide for
     Linux Instances.
 
-    * iam_instance_profile (String) - The name or the Amazon Resource Name (ARN) of the instance
+    * iam_instance_profile (`String`) - The name or the Amazon Resource Name (ARN) of the instance
     profile associated with the IAM role for the instance. EC2 instances launched with an IAM role
     automatically have AWS security credentials available. You can use IAM roles with Amazon EC2
     Auto Scaling to automatically enable applications running on your EC2 instances to securely
     access other AWS resources. For more information, see Use an IAM Role for Applications That
     Run on Amazon EC2 Instances in the Amazon EC2 Auto Scaling User Guide.
 
-    * image_id (String) - The ID of the Amazon Machine Image (AMI) to use to launch your EC2 instances.
+    * image_id (`String`) - The ID of the Amazon Machine Image (AMI) to use to launch your EC2 instances.
     If you do not specify instance_id, you must specify image_id.
 
-    * instance_id (String) - The ID of the instance to use to create the launch configuration. The new
+    * instance_id (`String`) - The ID of the instance to use to create the launch configuration. The new
     launch configuration derives attributes from the instance, except for the block device mapping.
     If you do not specify instance_id, you must specify both image_id and instance_type.
     To create a launch configuration with a block device mapping or override any other instance
     attributes, specify them as part of the same request. For more information, see Create a Launch
     Configuration Using an EC2 Instance in the Amazon EC2 Auto Scaling User Guide.
 
-    * instance_monitoring (Boolean) - Enables detailed monitoring (true) or basic monitoring
+    * instance_monitoring (boolean) - Enables detailed monitoring (true) or basic monitoring
     (false) for the Auto Scaling instances. The default value is true.
 
-    * instance_type (String) - The instance type of the EC2 instance. If you do not specify instance_id,
+    * instance_type (`String`) - The instance type of the EC2 instance. If you do not specify instance_id,
     you must specify instance_type. For information about available instance types, see Available Instance
     Types in the Amazon EC2 User Guide for Linux Instances.
 
-    * kernel_id (String) - The ID of the kernel associated with the AMI.
+    * kernel_id (`String`) - The ID of the kernel associated with the AMI.
 
-    * key_name (String) - The name of the key pair. For more information, see Amazon EC2 Key Pairs in
+    * key_name (`String`) - The name of the key pair. For more information, see Amazon EC2 Key Pairs in
     the Amazon EC2 User Guide for Linux Instances.
 
-    * placement_tenancy (String) - The tenancy of the instance. An instance with a tenancy of dedicated
+    * placement_tenancy (`String`) - The tenancy of the instance. An instance with a tenancy of dedicated
     runs on single-tenant hardware and can only be launched into a VPC. To launch Dedicated Instances
     into a shared tenancy VPC (a VPC with the instance placement tenancy attribute set to default), you
     must set the value of this parameter to dedicated. If you specify this parameter, be sure to specify at
     least one subnet when you create your group. For more information, see Launching Auto Scaling Instances
     in a VPC in the Amazon EC2 Auto Scaling User Guide. Valid values: "default" | "dedicated"
 
-    * ramdisk_id (String) - The ID of the RAM disk associated with the AMI.
+    * ramdisk_id (`String`) - The ID of the RAM disk associated with the AMI.
 
-    * security_groups (List of String) - One or more security groups with which to associate the instances.
+    * security_groups (`List` of String) - One or more security groups with which to associate the instances.
     If your instances are launched in EC2-Classic, you can either specify security group names or the
     security group IDs. For more information, see Amazon EC2 Security Groups in the Amazon EC2 User Guide
     for Linux Instances. If your instances are launched into a VPC, specify security group IDs. For more
     information, see Security Groups for Your VPC in the Amazon Virtual Private Cloud User Guide.
 
-    * spot_price (String) - The maximum hourly price to be paid for any Spot Instance launched to fulfill
+    * spot_price (`String`) - The maximum hourly price to be paid for any Spot Instance launched to fulfill
     the request. Spot Instances are launched when the price you specify exceeds the current Spot market
     price. For more information, see Launching Spot Instances in Your Auto Scaling Group in the Amazon EC2
     Auto Scaling User Guide.
 
-    * user_data (String) - The user data to make available to the launched EC2 instances. For more
+    * user_data (`String`) - The user data to make available to the launched EC2 instances. For more
     information, see Instance Metadata and User Data in the Amazon EC2 User Guide for Linux Instances.
     This value will be base64 encoded automatically. Do not base64 encode this value prior to performing
     the operation.
@@ -610,7 +612,7 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * force_delete (Boolean) - Specifies that the group is to be deleted
+    * force_delete (boolean) - Specifies that the group is to be deleted
     along with all instances associated with the group, without waiting for
     all instances to be terminated. This parameter also deletes any lifecycle
     actions associated with the group.
@@ -624,7 +626,7 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * auto_scaling_group_name (String) - The name of the Auto Scaling group
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
   """
   @type delete_policy_opts :: [
           auto_scaling_group_name: binary
@@ -641,13 +643,13 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * launch_configuration_names (List of String) - The launch configuration names. If
+    * launch_configuration_names (`List` of String) - The launch configuration names. If
     you omit this parameter, all launch configurations are described.
 
-    * max_records (Integer) - The maximum number of items to return with this call. The
+    * max_records (`Integer`) - The maximum number of items to return with this call. The
     default value is 50 and the maximum value is 100.
 
-    * next_token (String) - The token for the next set of items to return. (You received
+    * next_token (`String`) - The token for the next set of items to return. (You received
     this token from a previous call.)
   """
   @type describe_launch_configurations_opts :: [
@@ -661,7 +663,7 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * lifecycle_hook_names (List of String) - The names of one or more lifecycle
+    * lifecycle_hook_names (`List` of String) - The names of one or more lifecycle
     hooks. If you omit this parameter, all lifecycle hooks are described.
 
   """
@@ -674,10 +676,10 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * max_records (Integer) - The maximum number of items to return with this call. The
+    * max_records (`Integer`) - The maximum number of items to return with this call. The
     default value is 50 and the maximum value is 100.
 
-    * next_token (String) - The token for the next set of items to return. (You received
+    * next_token (`String`) - The token for the next set of items to return. (You received
     this token from a previous call.)
   """
   @type paging_opts :: [
@@ -690,12 +692,12 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * auto_scaling_group_names (List of String) - The name of the Auto Scaling group
+    * auto_scaling_group_names (`List` of String) - The name of the Auto Scaling group
 
-    * max_records (Integer) - The maximum number of items to return with this call. The
+    * max_records (`Integer`) - The maximum number of items to return with this call. The
     default value is 50 and the maximum value is 100.
 
-    * next_token (String) - The token for the next set of items to return. (You received
+    * next_token (`String`) - The token for the next set of items to return. (You received
     this token from a previous call.)
   """
   @type describe_notification_configurations_opts :: [
@@ -704,12 +706,39 @@ defmodule ExAws.AutoScaling do
           next_token: binary
         ]
 
+  @typedoc """
+    The optional parameters when calling `describe_policies/1`
+
+  ## Keys
+
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
+
+    * max_records (`Integer`) - The maximum number of items to return with this call. The
+    default value is 50 and the maximum value is 100.
+
+    * next_token (`String`) - The token for the next set of items to return. (You received
+    this token from a previous call.)
+  """
   @type describe_policies_opts :: [
           auto_scaling_group_name: binary,
           max_records: integer,
           next_token: binary
         ]
 
+  @typedoc """
+    The optional parameters when calling `describe_scaling_activities/1`
+
+
+  ## Keys
+
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
+
+    * max_records (`Integer`) - The maximum number of items to return with this call. The
+    default value is 50 and the maximum value is 100.
+
+    * next_token (`String`) - The token for the next set of items to return. (You received
+    this token from a previous call.)
+  """
   @type describe_scaling_activities_opts :: [
           auto_scaling_group_name: binary,
           max_records: integer,
@@ -721,23 +750,23 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * auto_scaling_group_name (String) - The name of the Auto Scaling group
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
 
-    * end_time (String) - The latest scheduled start time to return. If
+    * end_time (`String`) - The latest scheduled start time to return. If
     scheduled action names are provided, this parameter is ignored.
 
-    * max_records (Integer) - The maximum number of items to return with this call. The
+    * max_records (`Integer`) - The maximum number of items to return with this call. The
     default value is 50 and the maximum value is 100.
 
-    * next_token (String) - The token for the next set of items to return. (You received
+    * next_token (`String`) - The token for the next set of items to return. (You received
     this token from a previous call.)
 
-    * scheduled_action_names (List of String) - The names of one or more scheduled
+    * scheduled_action_names (`List` of String) - The names of one or more scheduled
     actions. You can specify up to 50 actions. If you omit this parameter, all
     scheduled actions are described. If you specify an unknown scheduled action,
     it is ignored with no error.
 
-    * start_time (String) - The earliest scheduled start time to return. If
+    * start_time (`String`) - The earliest scheduled start time to return. If
     scheduled action names are provided, this parameter is ignored.
   """
   @type describe_scheduled_actions_opts :: [
@@ -747,6 +776,57 @@ defmodule ExAws.AutoScaling do
           next_token: binary,
           scheduled_action_names: [binary, ...],
           start_time: binary
+        ]
+
+  @typedoc """
+    Describes a filter.
+
+  ## Parameters
+
+    * name (`String`) - The name of the filter. The valid values are:
+    "auto-scaling-group", "key", "value", and "propagate-at-launch".
+
+    * values (`List` of `String`) - The value of the filter.
+  """
+  @type filter :: [
+          name: binary,
+          values: [binary, ...]
+        ]
+
+  @typedoc """
+   The optional parameters when calling `describe_tags/1`
+
+  ## Keys
+
+    * filters (`List` of `t:filter/0`) - One or more filters to scope the tags to
+    return. The maximum number of filters per filter type (for example,
+    auto-scaling-group) is 1000.
+
+    * max_records (`Integer`) - The maximum number of items to return with this call. The
+    default value is 50 and the maximum value is 100.
+
+    * next_token (`String`) - The token for the next set of items to return. (You received
+    this token from a previous call.)
+
+  """
+  @type describe_tags_opts :: [
+          filters: [filter, ...],
+          max_records: integer,
+          next_token: binary,
+          scheduled_action_names: [binary, ...],
+          start_time: binary
+        ]
+
+  @typedoc """
+   The optional parameters when calling `detach_instances/3`
+
+  ## Keys
+
+    * instance_ids (`List` of `String`) - The IDs of the instances. You can
+    specify up to 20 instances.
+  """
+  @type detach_instances_opts :: [
+          instance_ids: [binary, ...]
         ]
 
   @doc """
@@ -764,7 +844,7 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * auto_scaling_group_name (String) - The name of the Auto Scaling group
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
 
     * opts - See `t:attach_instances_opts/0`
 
@@ -799,9 +879,9 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * auto_scaling_group_name (String) - The name of the Auto Scaling group
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
 
-    * load_balancer_names (List of String) - The names of the load balancers. You
+    * load_balancer_names (`List` of String) - The names of the load balancers. You
     can specify up to 10 load balancers.
 
   ## Examples:
@@ -983,7 +1063,7 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * launch_configuration_name (String) - The name of the launch configuration.
+    * launch_configuration_name (`String`) - The name of the launch configuration.
     This name must be unique within the scope of your AWS account.
 
     * opts (`t:create_launch_configuration_opts/0`) - optional parameters
@@ -1008,7 +1088,7 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * tags (List of `t:tag/0`) - One or more tags.
+    * tags (`List` of `t:tag/0`) - One or more tags.
   """
   def create_or_update_tags(tags) do
     [tags: tags]
@@ -1035,9 +1115,9 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * auto_scaling_group_name (String) - The name of the Auto Scaling group.
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group.
 
-    * opts (`t:delete_auto_scaling_group_opts`)
+    * opts (`t:delete_auto_scaling_group_opts/0`)
   """
   @spec delete_auto_scaling_group(auto_scaling_group_name :: binary) :: ExAws.Operation.Query.t()
   @spec delete_auto_scaling_group(
@@ -1057,7 +1137,7 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * launch_configuration_name (String) - The name of the launch configuration.
+    * launch_configuration_name (`String`) - The name of the launch configuration.
   """
   @spec delete_launch_configuration(launch_configuration_name :: binary) ::
           ExAws.Operation.Query.t()
@@ -1074,9 +1154,9 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * auto_scaling_group_name (String) - The name of the Auto Scaling group.
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group.
 
-    * lifecycle_hook_name (String) - The name of the lifecycle hook.
+    * lifecycle_hook_name (`String`) - The name of the lifecycle hook.
   """
   @spec delete_lifecycle_hook(auto_scaling_group_name :: binary, lifecycle_hook_name :: binary) ::
           ExAws.Operation.Query.t()
@@ -1090,9 +1170,9 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * auto_scaling_group_name (String) - The name of the Auto Scaling group.
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group.
 
-    * topic_arn (String) - The Amazon Resource Name (ARN) of the Amazon Simple
+    * topic_arn (`String`) - The Amazon Resource Name (ARN) of the Amazon Simple
     Notification Service (Amazon SNS) topic.
   """
   @spec delete_notification_configuration(auto_scaling_group_name :: binary, topic_arn :: binary) ::
@@ -1110,7 +1190,7 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * policy_name (String) - The name or Amazon Resource Name (ARN) of the policy.
+    * policy_name (`String`) - The name or Amazon Resource Name (ARN) of the policy.
 
     * opts (`t:delete_policy_opts/0`)
   """
@@ -1127,9 +1207,9 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * auto_scaling_group_name (String) - The name of the Auto Scaling group.
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group.
 
-    * scheduled_action_name (String) - The name of the action to delete
+    * scheduled_action_name (`String`) - The name of the action to delete
   """
   @spec delete_scheduled_action(
           auto_scaling_group_name :: binary,
@@ -1148,7 +1228,7 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * tags (List of `t:tag/0`) - One or more tags.
+    * tags (`List` of `t:tag/0`) - One or more tags.
   """
   @spec delete_tags(tags :: [tag, ...]) :: ExAws.Operation.Query.t()
   def delete_tags(tags) do
@@ -1189,7 +1269,7 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * opts (`t:describe_auto_scaling_instances_opts)
+    * opts (`t:describe_auto_scaling_instances_opts`)
   """
   @spec describe_auto_scaling_instances() :: ExAws.Operation.Query.t()
   @spec describe_auto_scaling_instances(opts :: describe_auto_scaling_instances_opts) ::
@@ -1226,7 +1306,7 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * auto_scaling_group_name (String) - The name of the Auto Scaling group.
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group.
 
     * opts (`t:describe_lifecycle_hooks_opts/0`)
   """
@@ -1245,8 +1325,8 @@ defmodule ExAws.AutoScaling do
 
     The following hook types are supported:
 
-      * autoscaling:EC2_INSTANCE_LAUNCHING
-      * autoscaling:EC2_INSTANCE_TERMINATING
+    * autoscaling:EC2_INSTANCE_LAUNCHING
+    * autoscaling:EC2_INSTANCE_TERMINATING
   """
   @spec describe_lifecycle_hook_types() :: ExAws.Operation.Query.t()
   def describe_lifecycle_hook_types do
@@ -1259,6 +1339,12 @@ defmodule ExAws.AutoScaling do
     This operation describes only Classic Load Balancers. If you have
     Application Load Balancers or Network Load Balancers, use
     `describe_load_balancer_target_groups/2` instead.
+
+  ## Parameters
+
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group.
+
+    * opts (`t:paging_opts/0`)
   """
   @spec describe_load_balancers(auto_scaling_group_name :: binary) :: ExAws.Operation.Query.t()
   @spec describe_load_balancers(auto_scaling_group_name :: binary, opts :: paging_opts) ::
@@ -1299,7 +1385,7 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * opts (`t:describe_notification_configurations/0`)
+    * opts (`t:describe_notification_configurations_opts/0`)
   """
   @spec describe_notification_configurations() :: ExAws.Operation.Query.t()
   @spec describe_notification_configurations(opts :: describe_notification_configurations_opts) ::
@@ -1314,7 +1400,7 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * opts (`t:describe_policies_opts`)
+    * opts (`t:describe_policies_opts/0`)
   """
   @spec describe_policies() :: ExAws.Operation.Query.t()
   @spec describe_policies(opts :: describe_policies_opts) :: ExAws.Operation.Query.t()
@@ -1351,10 +1437,73 @@ defmodule ExAws.AutoScaling do
     Describes the actions scheduled for your Auto Scaling group
     that haven't run. To describe the actions that have already
     run, use `describe_scaling_activities/2`.
+
+  ## Parameters
+
+    * opts (`t:describe_scheduled_actions_opts/0`)
   """
   def describe_scheduled_actions(opts \\ []) do
     opts
     |> build_request(:describe_scheduled_actions)
+  end
+
+  @doc """
+    Describes the specified tags.
+
+    You can use filters to limit the results. For example, you can query
+    for the tags for a specific Auto Scaling group. You can specify multiple
+    values for a filter. A tag must match at least one of the specified
+    values for it to be included in the results.
+
+    You can also specify multiple filters. The result includes information for
+    a particular tag only if it matches all the filters. If there's no match,
+    no special message is returned.
+
+  ## Parameters
+
+    * opts (`t:describe_tags_opts`)
+  """
+  @spec describe_tags() :: ExAws.Operation.Query.t()
+  @spec describe_tags(opts :: describe_tags_opts) :: ExAws.Operation.Query.t()
+  def describe_tags(opts \\ []) do
+    opts
+    |> build_request(:describe_tags)
+  end
+
+  @doc """
+    Describes the termination policies supported by Amazon EC2 Auto Scaling.
+
+    For more information, see Controlling Which Auto Scaling Instances Terminate
+    During Scale In in the Amazon EC2 Auto Scaling User Guide.
+  """
+  @spec describe_termination_policy_types() :: ExAws.Operation.Query.t()
+  def describe_termination_policy_types do
+    request(%{}, :describe_termination_policy_types)
+  end
+
+  @doc """
+    Removes one or more instances from the specified Auto Scaling group.
+
+    After the instances are detached, you can manage them independent of the
+    Auto Scaling group.
+
+    If you do not specify the option to decrement the desired capacity, Amazon
+    EC2 Auto Scaling launches instances to replace the ones that are detached.
+
+    If there is a Classic Load Balancer attached to the Auto Scaling group,
+    the instances are deregistered from the load balancer. If there are target
+    groups attached to the Auto Scaling group, the instances are deregistered
+    from the target groups.
+
+    For more information, see Detach EC2 Instances from Your Auto Scaling Group
+    in the Amazon EC2 Auto Scaling User Guide.
+  """
+  def detach_instances(auto_scaling_group_name, should_decrement_desired_capacity, opts \\ []) do
+    [
+      {:auto_scaling_group_name, auto_scaling_group_name},
+      {:should_decrement_desired_capacity, should_decrement_desired_capacity} | opts
+    ]
+    |> build_request(:detach_instances)
   end
 
   ####################
