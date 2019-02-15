@@ -829,6 +829,27 @@ defmodule ExAws.AutoScaling do
           instance_ids: [binary, ...]
         ]
 
+  @typedoc """
+   The optional parameters when calling `disable_metrics_collection/2`
+
+  ## Keys
+
+    * metrics (`List` of `String`) - One or more of the following metrics.
+    If you omit this parameter, all metrics are disabled.
+
+      * GroupMinSize
+      * GroupMaxSize
+      * GroupDesiredCapacity
+      * GroupInServiceInstances
+      * GroupPendingInstances
+      * GroupStandbyInstances
+      * GroupTerminatingInstances
+      * GroupTotalInstances
+  """
+  @type disable_metrics_collection_opts :: [
+          metrics: [binary, ...]
+        ]
+
   @doc """
     Attaches one or more EC2 instances to the specified Auto Scaling group
 
@@ -1497,6 +1518,15 @@ defmodule ExAws.AutoScaling do
 
     For more information, see Detach EC2 Instances from Your Auto Scaling Group
     in the Amazon EC2 Auto Scaling User Guide.
+
+  ## Parameters
+
+    * auto_scaling_group_name  (`String`) - The name of the Auto Scaling group
+
+    * should_decrement_desired_capacity (Boolean) - Indicates whether the Auto Scaling
+    group decrements the desired capacity value by the number of instances detached.
+
+    * opts (`t:detach_instances_opts`)
   """
   def detach_instances(auto_scaling_group_name, should_decrement_desired_capacity, opts \\ []) do
     [
@@ -1504,6 +1534,70 @@ defmodule ExAws.AutoScaling do
       {:should_decrement_desired_capacity, should_decrement_desired_capacity} | opts
     ]
     |> build_request(:detach_instances)
+  end
+
+  @doc """
+    Detaches one or more Classic Load Balancers from the specified Auto Scaling group.
+
+    This operation detaches only Classic Load Balancers. If you have Application Load
+    Balancers or Network Load Balancers, use `detach_load_balancer_target_groups/2`
+    instead.
+
+    When you detach a load balancer, it enters the Removing state while deregistering
+    the instances in the group. When all instances are deregistered, then you can no
+    longer describe the load balancer using `describe_load_balancers/2`. The instances
+    remain running.
+
+  ## Parameters
+
+    * auto_scaling_group_name  (`String`) - The name of the Auto Scaling group
+
+    * load_balancer_names (`List` of `String`) - The names of the load balancers. You
+    can specify up to 10 load balancers.
+  """
+  def detach_load_balancers(auto_scaling_group_name, load_balancer_names) do
+    [
+      {:auto_scaling_group_name, auto_scaling_group_name},
+      {:load_balancer_names, load_balancer_names}
+    ]
+    |> build_request(:detach_load_balancers)
+  end
+
+  @doc """
+    Detaches one or more target groups from the specified Auto Scaling group.
+
+  ## Parameters
+
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
+
+    * target_group_arns (`List` of `String`) - The Amazon Resource Names (ARN) of
+    the target groups. You can specify up to 10 target groups.
+  """
+  def detach_load_balancer_target_groups(auto_scaling_group_name, target_group_arns) do
+    [
+      {:auto_scaling_group_name, auto_scaling_group_name},
+      {:target_group_arns, target_group_arns}
+    ]
+    |> build_request(:detach_load_balancer_target_groups)
+  end
+
+  @doc """
+    Disables group metrics for the specified Auto Scaling group.
+
+  ## Parameters
+
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
+
+    * opts (`t:disable_metrics_collection_opts`)
+  """
+  @spec disable_metrics_collection(auto_scaling_group_name :: binary) :: ExAws.Operation.Query.t()
+  @spec disable_metrics_collection(
+          auto_scaling_group_name :: binary,
+          opts :: disable_metrics_collection_opts
+        ) :: ExAws.Operation.Query.t()
+  def disable_metrics_collection(auto_scaling_group_name, opts \\ []) do
+    [{:auto_scaling_group_name, auto_scaling_group_name} | opts]
+    |> build_request(:disable_metrics_collection)
   end
 
   ####################
