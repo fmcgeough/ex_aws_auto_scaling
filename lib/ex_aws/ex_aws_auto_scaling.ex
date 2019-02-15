@@ -22,6 +22,7 @@ defmodule ExAws.AutoScaling do
     :launch_configuration_names,
     :lifecycle_hook_names,
     :load_balancer_names,
+    :metrics,
     :scheduled_action_names,
     :scheduled_update_group_actions,
     :security_groups,
