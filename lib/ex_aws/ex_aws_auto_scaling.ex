@@ -832,6 +832,7 @@ defmodule ExAws.AutoScaling do
 
   @typedoc """
    The optional parameters when calling `disable_metrics_collection/2`
+   or `enable_metrics_collection/3`
 
   ## Keys
 
@@ -847,7 +848,7 @@ defmodule ExAws.AutoScaling do
       * GroupTerminatingInstances
       * GroupTotalInstances
   """
-  @type disable_metrics_collection_opts :: [
+  @type metrics_collection_opts :: [
           metrics: [binary, ...]
         ]
 
@@ -1589,16 +1590,36 @@ defmodule ExAws.AutoScaling do
 
     * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
 
-    * opts (`t:disable_metrics_collection_opts`)
+    * opts (`t:metrics_collection_opts`)
   """
   @spec disable_metrics_collection(auto_scaling_group_name :: binary) :: ExAws.Operation.Query.t()
   @spec disable_metrics_collection(
           auto_scaling_group_name :: binary,
-          opts :: disable_metrics_collection_opts
+          opts :: metrics_collection_opts
         ) :: ExAws.Operation.Query.t()
   def disable_metrics_collection(auto_scaling_group_name, opts \\ []) do
     [{:auto_scaling_group_name, auto_scaling_group_name} | opts]
     |> build_request(:disable_metrics_collection)
+  end
+
+  @doc """
+    Enables group metrics for the specified Auto Scaling group
+
+    For more information, see Monitoring Your Auto Scaling Groups and
+    Instances in the Amazon EC2 Auto Scaling User Guide.
+
+  ## Parameters
+
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
+
+    * granularity (`String`) - The granularity to associate with the metrics to collect.
+    The only valid value is "1Minute".
+
+    * opts (`t:metrics_collection_opts`)
+  """
+  def enable_metrics_collection(auto_scaling_group_name, granularity \\ "1Minute", opts \\ []) do
+    [{:auto_scaling_group_name, auto_scaling_group_name}, {:granularity, granularity} | opts]
+    |> build_request(:enable_metrics_collection)
   end
 
   ####################
