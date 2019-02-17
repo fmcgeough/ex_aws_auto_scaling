@@ -9,6 +9,7 @@ defmodule ExAws.AutoScaling do
     classic_link_vpc_security_groups: "ClassicLinkVPCSecurityGroups",
     notification_target_arn: "NotificationTargetARN",
     role_arn: "RoleARN",
+    service_linked_role_arn: "ServiceLinkedRoleARN",
     topic_arn: "TopicARN",
     values: "Values.member"
   }
@@ -184,6 +185,47 @@ defmodule ExAws.AutoScaling do
           heartbeat_timeout: integer,
           lifecycle_hook_name: binary,
           lifecycle_transition: binary,
+          notification_target_arn: binary,
+          role_arn: binary
+        ]
+
+  @typedoc """
+    Optional parmeters to `put_lifecycle_hook/3`
+
+  ## Keys
+
+    * default_result (`String`) - Defines the action the Auto Scaling group
+    should take when the lifecycle hook timeout elapses or if an unexpected
+    failure occurs. The valid values are "CONTINUE" and "ABANDON".
+
+    * heartbeat_timeout (`Integer`) - The maximum time, in seconds, that can
+    elapse before the lifecycle hook times out. If the lifecycle hook times
+    out, Amazon EC2 Auto Scaling performs the action that you specified in the
+    default_result parameter. You can prevent the lifecycle hook from timing
+    out by calling `record_lifecycle_action_heartbeat/2`.
+
+    * notification_metadata (`String`) - Contains additional information that
+    you want to include any time Amazon EC2 Auto Scaling sends a message to
+    the notification target.
+
+    * lifecycle_transition (`String`) - The state of the EC2 instance to which you
+    want to attach the lifecycle hook. The possible values are:
+    "autoscaling:EC2_INSTANCE_LAUNCHING" | "autoscaling:EC2_INSTANCE_TERMINATING"
+
+    * notification_target_arn (`String`) - The ARN of the target that Amazon EC2
+    Auto Scaling sends notifications to when an instance is in the transition state
+    for the lifecycle hook. The notification target can be either an SQS queue or
+    an SNS topic.
+
+    * role_arn (`String`) - The ARN of the IAM role that allows the Auto Scaling group
+    to publish to the specified notification target, for example, an Amazon SNS
+    topic or an Amazon SQS queue
+  """
+  @type put_lifecycle_hook_opts :: [
+          default_result: binary,
+          heartbeat_timeout: integer,
+          lifecycle_transition: binary,
+          notification_metadata: binary,
           notification_target_arn: binary,
           role_arn: binary
         ]
@@ -1001,6 +1043,83 @@ defmodule ExAws.AutoScaling do
           honor_cooldown: boolean
         ]
 
+  @typedoc """
+    Describes the dimension of a metric
+  """
+  @type metric_dimension :: [
+          name: binary,
+          value: binary
+        ]
+
+  @typedoc """
+    A customized metric. You can specify either a predefined metric or a customized metric
+  """
+  @type customized_metric_specification :: [
+          dimensions: [metric_dimension, ...],
+          metric_name: binary,
+          namespace: binary,
+          statistic: binary,
+          unit: binary
+        ]
+
+  @typedoc """
+    Represents a predefined metric for a target tracking scaling policy to use with
+    Amazon EC2 Auto Scaling.
+
+  """
+  @type predefined_metric_specification :: [
+          predefined_metric_type: binary,
+          resource_label: binary
+        ]
+
+  @typedoc """
+    A target tracking scaling policy.
+
+  """
+  @type target_tracking_configuration :: [
+          customized_metric_specification: customized_metric_specification,
+          disable_scale_in: boolean,
+          predefined_metric_specification: predefined_metric_specification,
+          target_value: float
+        ]
+
+  @typedoc """
+    Optional parameters to `put_scaling_policy/3`
+  """
+  @type put_scaling_policy_opts :: [
+          adjustment_type: binary,
+          cooldown: integer,
+          estimated_instance_warmup: integer,
+          metric_aggregation_type: binary,
+          min_adjustment_magnitude: integer,
+          min_adjustment_step: integer,
+          policy_type: binary,
+          scaling_adjustment: integer,
+          target_tracking_configuration: target_tracking_configuration
+        ]
+
+  @typedoc """
+    Optional parameters to `put_scheduled_update_group_action/3`
+
+
+  """
+  @type put_scheduled_update_group_action_opts :: [
+          desired_capacity: integer,
+          end_time: binary,
+          max_size: integer,
+          min_size: integer,
+          recurrence: binary,
+          start_time: binary
+        ]
+
+  @typedoc """
+    Optional parameters to `record_lifecycle_action_heartbeat/3`
+  """
+  @type record_lifecycle_action_heartbeat_opts :: [
+          instance_id: binary,
+          lifecycle_action_token: binary
+        ]
+
   @doc """
     Attaches one or more EC2 instances to the specified Auto Scaling group
 
@@ -1099,6 +1218,13 @@ defmodule ExAws.AutoScaling do
             "TargetGroupARNs.member.1" => "my-targetarn",
             "Version" => "2011-01-01"
         }
+
+  ## Parameters
+
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
+
+    * target_group_arns (`List` of `String`) - The Amazon Resource Names (ARN) of
+    the target groups. You can specify up to 10 target groups.
   """
   @spec attach_load_balancer_target_groups(
           auto_scaling_group_name :: binary,
@@ -1570,6 +1696,12 @@ defmodule ExAws.AutoScaling do
 
   @doc """
     Describes the target groups for the specified Auto Scaling group
+
+  ## Parameters
+
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group.
+
+    * opts (`t:paging_opts/0`) - optional parameters
   """
   @spec describe_load_balancer_target_groups(auto_scaling_group_name :: binary) ::
           ExAws.Operation.Query.t()
@@ -1614,7 +1746,7 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * opts (`t:describe_policies_opts/0`)
+    * opts (`t:describe_policies_opts/0`) - optional parameters
   """
   @spec describe_policies() :: ExAws.Operation.Query.t()
   @spec describe_policies(opts :: describe_policies_opts) :: ExAws.Operation.Query.t()
@@ -1914,7 +2046,22 @@ defmodule ExAws.AutoScaling do
 
     If you exceed your maximum limit of lifecycle hooks, which by default is 50 per Auto
     Scaling group, the call fails.
+
+  ## Parameters
+
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
+
+    * lifecycle_hook_name (`String`) - The name of the lifecycle hook
+
+    * opts (`t:put_lifecycle_hook_opts/0`) - optional parameters
   """
+  @spec put_lifecycle_hook(auto_scaling_group_name :: binary, lifecycle_hook_name :: binary) ::
+          ExAws.Operation.Query.t()
+  @spec put_lifecycle_hook(
+          auto_scaling_group_name :: binary,
+          lifecycle_hook_name :: binary,
+          opts :: put_lifecycle_hook_opts
+        ) :: ExAws.Operation.Query.t()
   def put_lifecycle_hook(auto_scaling_group_name, lifecycle_hook_name, opts \\ []) do
     [
       {:auto_scaling_group_name, auto_scaling_group_name},
@@ -1946,6 +2093,11 @@ defmodule ExAws.AutoScaling do
     notification to be sent. For more information about notification types supported
     by Amazon EC2 Auto Scaling, see describe_auto_scaling_notification_types.
   """
+  @spec put_notification_configuration(
+          auto_scaling_group_name :: binary,
+          topic_arn :: binary,
+          notification_types :: [binary, ...]
+        ) :: ExAws.Operation.Query.t()
   def put_notification_configuration(auto_scaling_group_name, topic_arn, notification_types) do
     [
       {:auto_scaling_group_name, auto_scaling_group_name},
@@ -1968,8 +2120,15 @@ defmodule ExAws.AutoScaling do
 
     * policy_name (`String`) - The name of the policy
 
-    * opts (`t:put_scaling_policy_opts/0`)
+    * opts (`t:put_scaling_policy_opts/0`) - optional parameters
   """
+  @spec put_scaling_policy(auto_scaling_group_name :: binary, policy_name :: binary) ::
+          ExAws.Operation.Query.t()
+  @spec put_scaling_policy(
+          auto_scaling_group_name :: binary,
+          policy_name :: binary,
+          opts :: put_scaling_policy_opts
+        ) :: ExAws.Operation.Query.t()
   def put_scaling_policy(auto_scaling_group_name, policy_name, opts \\ []) do
     [
       {:auto_scaling_group_name, auto_scaling_group_name},
@@ -1995,6 +2154,15 @@ defmodule ExAws.AutoScaling do
 
     * opts (`t:put_scheduled_update_group_action_opts`)
   """
+  @spec put_scheduled_update_group_action(
+          auto_scaling_group_name :: binary,
+          scheduled_action_name :: binary
+        ) :: ExAws.Operation.Query.t()
+  @spec put_scheduled_update_group_action(
+          auto_scaling_group_name :: binary,
+          scheduled_action_name :: binary,
+          opts :: put_scheduled_update_group_action_opts
+        ) :: ExAws.Operation.Query.t()
   def put_scheduled_update_group_action(
         auto_scaling_group_name,
         scheduled_action_name,
@@ -2046,6 +2214,15 @@ defmodule ExAws.AutoScaling do
 
     * opts (`t:record_lifecycle_action_heartbeat_opts/0`)
   """
+  @spec record_lifecycle_action_heartbeat(
+          auto_scaling_group_name :: binary,
+          lifecycle_hook_name :: binary
+        ) :: ExAws.Operation.Query.t()
+  @spec record_lifecycle_action_heartbeat(
+          auto_scaling_group_name :: binary,
+          lifecycle_hook_name :: binary,
+          opts :: record_lifecycle_action_heartbeat_opts
+        ) :: ExAws.Operation.Query.t()
   def record_lifecycle_action_heartbeat(auto_scaling_group_name, lifecycle_hook_name, opts \\ []) do
     [
       {:auto_scaling_group_name, auto_scaling_group_name},
