@@ -38,7 +38,7 @@ defmodule ExAws.AutoScaling do
   @version "2011-01-01"
 
   @typedoc """
-    Optional arguments to `describe_auto_scaling_groups/1`
+    The optional parameters when calling `describe_auto_scaling_groups/1`
 
   ## Keys
 
@@ -98,12 +98,6 @@ defmodule ExAws.AutoScaling do
           start_time: binary,
           scheduled_action_name: binary
         ]
-
-  @typedoc """
-    One or more scheduled actions. The maximum number allowed is 50.
-    See `batch_put_scheduled_update_group_action/2`
-  """
-  @type scheduled_update_group_actions :: [scheduled_update_group_action_request, ...]
 
   @typedoc """
     The optional parameters when calling `complete_life_cycle_action/4`
@@ -261,11 +255,13 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * launch_template_specification - The launch template to use. You must specify either
-    the launch template ID or launch template name in the request.
+    * launch_template_specification (`t:launch_template_specification/0` - The launch
+    template to use. You must specify either the launch template ID or launch template
+    name in the request.
 
-    * overrides - Any parameters that you specify override the same parameters in the
-    launch template. Currently, the only supported override is instance type
+    * overrides (`List` of `t:launch_template_overrides/0` - Any parameters that you
+    specify override the same parameters in the launch template. Currently, the only
+    supported override is instance type
   """
   @type launch_template :: [
           launch_template_specification: launch_template_specification,
@@ -286,12 +282,13 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * instances_distribution - The instances distribution to use. If you leave this parameter
-    unspecified when creating the group, the default values are used.
+    * instances_distribution (`t:instances_distribution/0`) - The instances distribution to
+    use. If you leave this parameter unspecified when creating the group, the default values
+    are used.
 
-    * launch_template - The launch template and overrides.This parameter is required when
-    creating an Auto Scaling group with a mixed instances policy, but is not required when
-    updating the group.
+    * launch_template (`t:launch_template/0`) - The launch template and overrides. This
+    parameter is required when creating an Auto Scaling group with a mixed instances policy,
+    but is not required when updating the group.
   """
   @type mixed_instances_policy :: [
           instances_distribution: instances_distribution,
@@ -357,19 +354,20 @@ defmodule ExAws.AutoScaling do
     This parameter, a launch template, a mixed instances policy, or an EC2
     instance must be specified.
 
-    * launch_template (`t:launch_template_specification`) - The launch template
+    * launch_template (`t:launch_template_specification/0`) - The launch template
     to use to launch instances. This parameter, a launch configuration, a mixed
     instances policy, or an EC2 instance must be specified.
 
-    * lifecycle_hook_specification_list - One or more lifecycle hooks.
+    * lifecycle_hook_specification_list (`List` of
+    `t:lifecycle_hook_specification/0`) - One or more lifecycle hooks.
 
-    * load_balancer_names - One or more Classic Load Balancers. To specify an
-    Application Load Balancer or a Network Load Balancer, use target_group_ARNS
-    instead.
+    * load_balancer_names (`List` of `String`) - One or more Classic Load Balancers.
+    To specify an Application Load Balancer or a Network Load Balancer, use
+    target_group_arns instead.
 
-    * mixed_instances_policy - The mixed instances policy to use to launch instances.
-    This parameter, a launch template, a launch configuration, or an EC2 instance
-    must be specified.
+    * mixed_instances_policy (`t:mixed_instances_policy/0`) - The mixed instances policy
+    to use to launch instances. This parameter, a launch template, a launch configuration,
+    or an EC2 instance must be specified.
 
     * new_instances_protected_from_scale_in (boolean) - Indicates whether newly launched
     instances are protected from termination by Auto Scaling when scaling in.
@@ -380,23 +378,25 @@ defmodule ExAws.AutoScaling do
     your instances, if any. For more information, see Placement Groups in the Amazon
     EC2 User Guide for Linux Instances.
 
-    * service_linked_role_arn (`String`) - The Amazon Resource Name (ARN) of the service-linked
-    role that the Auto Scaling group uses to call other AWS services on your behalf. By default,
-    Amazon EC2 Auto Scaling uses a service-linked role named AWSServiceRoleForAutoScaling,
-    which it creates if it does not exist. For more information, see Service-Linked Roles in
-    the Amazon EC2 Auto Scaling User Guide.
+    * service_linked_role_arn (`String`) - The Amazon Resource Name (ARN) of the
+    service-linked role that the Auto Scaling group uses to call other AWS services
+    on your behalf. By default, Amazon EC2 Auto Scaling uses a service-linked role
+    named AWSServiceRoleForAutoScaling, which it creates if it does not exist. For
+    more information, see Service-Linked Roles in the Amazon EC2 Auto Scaling User
+    Guide.
 
-    * tags (`List` of Tag) - One or more tags
+    * tags (`List` of `t:tag/0`) - One or more tags
 
-    * target_group_arns (`List` of String) - The Amazon Resource Names (ARN) of the target groups.
+    * target_group_arns (`List` of `String`) - The Amazon Resource Names (ARN) of the
+    target groups.
 
-    * termination_policies (`List` of String) - One or more termination policies used to select the
-    instance to terminate. These policies are executed in the order that they are listed. For more
-    information, see "Controlling Which Instances Auto Scaling Terminates During Scale In" in the
-    Amazon EC2 Auto Scaling User Guide.
+    * termination_policies (`List` of `String`) - One or more termination policies used
+    to select the instance to terminate. These policies are executed in the order that
+    they are listed. For more information, see "Controlling Which Instances Auto Scaling
+    Terminates During Scale In" in the Amazon EC2 Auto Scaling User Guide.
 
-    * vpc_zone_identifier - A comma-separated list of subnet identifiers for your virtual private
-    cloud (VPC)
+    * vpc_zone_identifier (`String`) - A comma-separated list of subnet identifiers for
+    your virtual private cloud (VPC)
   """
   @type create_auto_scaling_group_opts :: [
           availability_zones: [binary, ...],
@@ -452,7 +452,7 @@ defmodule ExAws.AutoScaling do
     If you specify this parameter, you can't specify a launch template or a mixed
     instances policy.
 
-    * launch_template (`t:launch_template_specification`) - The launch template
+    * launch_template (`t:launch_template_specification/0`) - The launch template
     and version to use to specify the updates. If you specify this parameter,
     you can't specify a launch configuration or a mixed instances policy
 
@@ -479,13 +479,13 @@ defmodule ExAws.AutoScaling do
     which it creates if it does not exist. For more information, see Service-Linked Roles in
     the Amazon EC2 Auto Scaling User Guide.
 
-    * termination_policies (`List` of String) - One or more termination policies used to select the
-    instance to terminate. These policies are executed in the order that they are listed. For more
-    information, see "Controlling Which Instances Auto Scaling Terminates During Scale In" in the
-    Amazon EC2 Auto Scaling User Guide.
+    * termination_policies (`List` of String) - One or more termination policies used
+    to select the instance to terminate. These policies are executed in the order that
+    they are listed. For more information, see "Controlling Which Instances Auto Scaling
+    Terminates During Scale In" in the Amazon EC2 Auto Scaling User Guide.
 
-    * vpc_zone_identifier - A comma-separated list of subnet identifiers for your virtual private
-    cloud (VPC)
+    * vpc_zone_identifier (`String`) - A comma-separated list of subnet identifiers for your
+    virtual private cloud (VPC)
   """
   @type update_auto_scaling_group_opts :: [
           availability_zones: [binary, ...],
@@ -561,7 +561,7 @@ defmodule ExAws.AutoScaling do
     example, /dev/sdh or xvdh). For more information, see Device Naming on Linux
     Instances in the Amazon EC2 User Guide for Linux Instances.
 
-    * ebs - The information about the Amazon EBS volume.
+    * ebs (`t:ebs/0`) - The information about the Amazon EBS volume.
 
     * no_device (boolean) - Suppresses a device mapping. If this parameter is true for
     the root device, the instance might fail the EC2 health check. In that case,
@@ -598,7 +598,7 @@ defmodule ExAws.AutoScaling do
     more information, see ClassicLink in the Amazon EC2 User Guide for Linux Instances and Linking
     EC2-Classic Instances to a VPC in the Amazon EC2 Auto Scaling User Guide.
 
-    * classic_link_vpc_security_groups (`List` of String) - The IDs of one or more security groups
+    * classic_link_vpc_security_groups (`List` of `String`) - The IDs of one or more security groups
     for the specified ClassicLink-enabled VPC. This parameter is required if you specify a
     ClassicLink-enabled VPC, and is not supported otherwise. For more information, see ClassicLink
     in the Amazon EC2 User Guide for Linux Instances and Linking EC2-Classic Instances to a VPC in
@@ -737,7 +737,7 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * launch_configuration_names (`List` of String) - The launch configuration names. If
+    * launch_configuration_names (`List` of `String`) - The launch configuration names. If
     you omit this parameter, all launch configurations are described.
 
     * max_records (`Integer`) - The maximum number of items to return with this call. The
@@ -757,7 +757,7 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * lifecycle_hook_names (`List` of String) - The names of one or more lifecycle
+    * lifecycle_hook_names (`List` of `String`) - The names of one or more lifecycle
     hooks. If you omit this parameter, all lifecycle hooks are described.
 
   """
@@ -951,14 +951,14 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * breach_threshold - The breach threshold for the alarm. This parameter
+    * breach_threshold (`Float`) - The breach threshold for the alarm. This parameter
     is required if the policy type is StepScaling and not supported otherwise.
 
-    * honor_cooldown - Indicates whether Amazon EC2 Auto Scaling waits for the
+    * honor_cooldown (boolean) - Indicates whether Amazon EC2 Auto Scaling waits for the
     cooldown period to complete before executing the policy. This parameter is
     not supported if the policy type is StepScaling.
 
-    * metric_value - The metric value to compare to BreachThreshold. This enables
+    * metric_value (`Float`) - The metric value to compare to BreachThreshold. This enables
     you to execute a policy of type StepScaling and determine which step adjustment
     to use. For example, if the breach threshold is 50 and you want to use a step
     adjustment with a lower bound of 0 and an upper bound of 10, you can set the
@@ -977,7 +977,7 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * should_respect_grace_period (Boolean) - If the Auto Scaling group of the specified
+    * should_respect_grace_period (boolean) - If the Auto Scaling group of the specified
     instance has a health_check_grace_period specified for the group, by default, this
     call respects the grace period. Set this to false, to have the call not respect the
     grace period associated with the group. For more information about the health check
@@ -992,7 +992,7 @@ defmodule ExAws.AutoScaling do
 
   ## Keys
 
-    * honor_cooldown (Boolean) - Indicates whether Amazon EC2 Auto Scaling waits for
+    * honor_cooldown (boolean) - Indicates whether Amazon EC2 Auto Scaling waits for
     the cooldown period to complete before initiating a scaling activity to set your
     Auto Scaling group to its new capacity. By default, Amazon EC2 Auto Scaling does
     not honor the cooldown period during manual scaling activities.
@@ -1018,7 +1018,7 @@ defmodule ExAws.AutoScaling do
 
     * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
 
-    * opts - See `t:instances_opts/0`
+    * opts (`t:instances_opts/0`) - The optional parameters
 
   ## Example
 
@@ -1056,7 +1056,7 @@ defmodule ExAws.AutoScaling do
     * load_balancer_names (`List` of String) - The names of the load balancers. You
     can specify up to 10 load balancers.
 
-  ## Examples:
+  ## Example:
 
         iex> op = ExAws.AutoScaling.attach_load_balancers("my-asg", ["my-lb"])
         iex> op.params
@@ -1114,6 +1114,13 @@ defmodule ExAws.AutoScaling do
 
   @doc """
     Deletes one or more scheduled actions for the specified Auto Scaling group
+
+  ## Parameters
+
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
+
+    * scheduled_action_names (`List` of `String`) - The names of the scheduled
+    actions to delete. The maximum number allowed is 50.
   """
   @spec batch_delete_scheduled_action(
           auto_scaling_group_name :: binary,
@@ -1132,10 +1139,18 @@ defmodule ExAws.AutoScaling do
 
     If you leave a parameter unspecified when updating a scheduled scaling action, the
     corresponding value remains unchanged.
+
+  ## Parameters
+
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
+
+    * scheduled_update_group_actions (`List` of
+    `t:scheduled_update_group_action_request/0`) - Describes one or more scheduled
+    scaling action updates for a specified Auto Scaling group
   """
   @spec batch_put_scheduled_update_group_action(
           auto_scaling_group_name :: binary,
-          scheduled_update_group_actions :: scheduled_update_group_actions
+          scheduled_update_group_actions :: [scheduled_update_group_action_request, ...]
         ) :: ExAws.Operation.Query.t()
   def batch_put_scheduled_update_group_action(
         auto_scaling_group_name,
@@ -1168,6 +1183,17 @@ defmodule ExAws.AutoScaling do
     pending state.
 
     * If you finish before the timeout period ends, complete the lifecycle action.
+
+  ## Parameters
+
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
+
+    * lifecycle_hook_name (`String`) - The name of the lifecycle hook.
+
+    * lifecycle_action_result (`String`) - The action for the group to take. This
+    parameter can be either "CONTINUE" or "ABANDON".
+
+    * opts (`t:complete_life_cycle_action_opts`) - The optional parameters
   """
   @spec complete_life_cycle_action(
           auto_scaling_group_name :: binary,
@@ -1204,15 +1230,26 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * auto_scaling_group_name - The name of the Auto Scaling group. This name
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group. This name
     must be unique within the scope of your AWS account.
 
-    * min_size - The minimum size of the group
+    * min_size (`Integer`) - The minimum size of the group
 
-    * max_size - The maximum size of the group
+    * max_size (`Integer`) - The maximum size of the group
 
-    * opts - See `t:auto_scaling_group_opts/0`
+    * opts (`t:create_auto_scaling_group_opts/0`) - optional parameters
   """
+  @spec create_auto_scaling_group(
+          auto_scaling_group_name :: binary,
+          min_size :: integer,
+          max_size :: integer
+        ) :: ExAws.Operation.Query.t()
+  @spec create_auto_scaling_group(
+          auto_scaling_group_name :: binary,
+          min_size :: integer,
+          max_size :: integer,
+          opts :: create_auto_scaling_group_opts
+        ) :: ExAws.Operation.Query.t()
   def create_auto_scaling_group(auto_scaling_group_name, min_size, max_size, opts \\ []) do
     [
       {:auto_scaling_group_name, auto_scaling_group_name},
@@ -1289,7 +1326,7 @@ defmodule ExAws.AutoScaling do
 
     * auto_scaling_group_name (`String`) - The name of the Auto Scaling group.
 
-    * opts (`t:delete_auto_scaling_group_opts/0`)
+    * opts (`t:delete_auto_scaling_group_opts/0`) - optional parameters
   """
   @spec delete_auto_scaling_group(auto_scaling_group_name :: binary) :: ExAws.Operation.Query.t()
   @spec delete_auto_scaling_group(
@@ -1364,7 +1401,7 @@ defmodule ExAws.AutoScaling do
 
     * policy_name (`String`) - The name or Amazon Resource Name (ARN) of the policy.
 
-    * opts (`t:delete_policy_opts/0`)
+    * opts (`t:delete_policy_opts/0`) - optional parameters
   """
   @spec delete_policy(policy_name :: binary) :: ExAws.Operation.Query.t()
   @spec delete_policy(policy_name :: binary, opts :: delete_policy_opts) ::
@@ -1422,12 +1459,17 @@ defmodule ExAws.AutoScaling do
   @doc """
     Describes the policy adjustment types for use with `put_scaling_policy/2`
   """
+  @spec describe_adjustment_types :: ExAws.Operation.Query.t()
   def describe_adjustment_types do
     request(%{}, :describe_adjustment_types)
   end
 
   @doc """
     Describes one or more Auto Scaling groups
+
+  ## Parameters
+
+    * opts (`t:describe_auto_scaling_groups_opts/0`) - optional parameters
   """
   @spec describe_auto_scaling_groups() :: ExAws.Operation.Query.t()
   @spec describe_auto_scaling_groups(opts :: describe_auto_scaling_groups_opts) ::
@@ -1441,7 +1483,7 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * opts (`t:describe_auto_scaling_instances_opts`)
+    * opts (`t:describe_auto_scaling_instances_opts/0`) - optional parameters
   """
   @spec describe_auto_scaling_instances() :: ExAws.Operation.Query.t()
   @spec describe_auto_scaling_instances(opts :: describe_auto_scaling_instances_opts) ::
@@ -1464,7 +1506,7 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * opts (`t:describe_launch_configurations_opts/0`)
+    * opts (`t:describe_launch_configurations_opts/0`) - optional parameters
   """
   @spec describe_launch_configurations() :: ExAws.Operation.Query.t()
   @spec describe_launch_configurations(opts :: describe_launch_configurations_opts) ::
@@ -1480,7 +1522,7 @@ defmodule ExAws.AutoScaling do
 
     * auto_scaling_group_name (`String`) - The name of the Auto Scaling group.
 
-    * opts (`t:describe_lifecycle_hooks_opts/0`)
+    * opts (`t:describe_lifecycle_hooks_opts/0`) - optional parameters
   """
   @spec describe_lifecycle_hooks(auto_scaling_group_name :: binary) :: ExAws.Operation.Query.t()
   @spec describe_lifecycle_hooks(
@@ -1516,7 +1558,7 @@ defmodule ExAws.AutoScaling do
 
     * auto_scaling_group_name (`String`) - The name of the Auto Scaling group.
 
-    * opts (`t:paging_opts/0`)
+    * opts (`t:paging_opts/0`) - optional parameters
   """
   @spec describe_load_balancers(auto_scaling_group_name :: binary) :: ExAws.Operation.Query.t()
   @spec describe_load_balancers(auto_scaling_group_name :: binary, opts :: paging_opts) ::
@@ -1557,7 +1599,7 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * opts (`t:describe_notification_configurations_opts/0`)
+    * opts (`t:describe_notification_configurations_opts/0`) - optional parameters
   """
   @spec describe_notification_configurations() :: ExAws.Operation.Query.t()
   @spec describe_notification_configurations(opts :: describe_notification_configurations_opts) ::
@@ -1586,7 +1628,7 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * opts (`t:describe_scaling_activities_opts/0`)
+    * opts (`t:describe_scaling_activities_opts/0`) - optional parameters
   """
   @spec describe_scaling_activities() :: ExAws.Operation.Query.t()
   @spec describe_scaling_activities(opts :: describe_scaling_activities_opts) ::
@@ -1612,7 +1654,7 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * opts (`t:describe_scheduled_actions_opts/0`)
+    * opts (`t:describe_scheduled_actions_opts/0`) - optional parameters
   """
   def describe_scheduled_actions(opts \\ []) do
     opts
@@ -1633,7 +1675,7 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * opts (`t:describe_tags_opts`)
+    * opts (`t:describe_tags_opts`) - optional parameters
   """
   @spec describe_tags() :: ExAws.Operation.Query.t()
   @spec describe_tags(opts :: describe_tags_opts) :: ExAws.Operation.Query.t()
@@ -1674,10 +1716,10 @@ defmodule ExAws.AutoScaling do
 
     * auto_scaling_group_name  (`String`) - The name of the Auto Scaling group
 
-    * should_decrement_desired_capacity (Boolean) - Indicates whether the Auto Scaling
+    * should_decrement_desired_capacity (boolean) - Indicates whether the Auto Scaling
     group decrements the desired capacity value by the number of instances detached.
 
-    * opts (`t:instances_opts`)
+    * opts (`t:instances_opts`) - optional parameters
   """
   def detach_instances(auto_scaling_group_name, should_decrement_desired_capacity, opts \\ []) do
     [
@@ -1739,7 +1781,7 @@ defmodule ExAws.AutoScaling do
 
     * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
 
-    * opts (`t:metrics_collection_opts`)
+    * opts (`t:metrics_collection_opts`) - optional parameters
   """
   @spec disable_metrics_collection(auto_scaling_group_name :: binary) :: ExAws.Operation.Query.t()
   @spec disable_metrics_collection(
@@ -1764,7 +1806,7 @@ defmodule ExAws.AutoScaling do
     * granularity (`String`) - The granularity to associate with the metrics to collect.
     The only valid value is "1Minute".
 
-    * opts (`t:metrics_collection_opts`)
+    * opts (`t:metrics_collection_opts`) - optional parameters
   """
   def enable_metrics_collection(auto_scaling_group_name, granularity \\ "1Minute", opts \\ []) do
     [{:auto_scaling_group_name, auto_scaling_group_name}, {:granularity, granularity} | opts]
@@ -1781,10 +1823,10 @@ defmodule ExAws.AutoScaling do
 
     * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
 
-    * should_decrement_desired_capacity (Boolean) - Indicates whether to decrement the desired
+    * should_decrement_desired_capacity (boolean) - Indicates whether to decrement the desired
     capacity of the Auto Scaling group by the number of instances moved to Standby mode.
 
-    * opts (`t:instances_opts`)
+    * opts (`t:instances_opts`) - optional parameters
   """
   @spec enter_standby(
           auto_scaling_group_name :: binary,
@@ -1812,7 +1854,7 @@ defmodule ExAws.AutoScaling do
 
     * policy_name (`String`) - The name or ARN of the policy.
 
-    * opts (`t:execute_policy_opts`)
+    * opts (`t:execute_policy_opts/0`) - optional parameters
   """
   def execute_policy(auto_scaling_group_name, policy_name, opts \\ []) do
     [
@@ -1832,7 +1874,7 @@ defmodule ExAws.AutoScaling do
 
     * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
 
-    * opts (`t:instances_opts`)
+    * opts (`t:instances_opts`) - optional parameters
   """
   @spec exit_standby(auto_scaling_group_name :: binary, opts :: instances_opts) ::
           ExAws.Operation.Query.t()
@@ -1926,7 +1968,7 @@ defmodule ExAws.AutoScaling do
 
     * policy_name (`String`) - The name of the policy
 
-    * opts (`t:put_scaling_policy_opts`)
+    * opts (`t:put_scaling_policy_opts/0`)
   """
   def put_scaling_policy(auto_scaling_group_name, policy_name, opts \\ []) do
     [
@@ -2002,7 +2044,7 @@ defmodule ExAws.AutoScaling do
     this token to the notification target that you specified when you created
     the lifecycle hook.
 
-    * opts (`t:record_lifecycle_action_heartbeat_opts`)
+    * opts (`t:record_lifecycle_action_heartbeat_opts/0`)
   """
   def record_lifecycle_action_heartbeat(auto_scaling_group_name, lifecycle_hook_name, opts \\ []) do
     [
@@ -2037,7 +2079,7 @@ defmodule ExAws.AutoScaling do
     * desired_capacity (`Integer`) - The number of EC2 instances that should
     be running in the Auto Scaling group.
 
-    * opts (`t: set_desired_dapacity_opts`)
+    * opts (`t: set_desired_dapacity_opts/0`)
   """
   @spec set_desired_dapacity(auto_scaling_group_name :: binary, desired_capacity :: integer) ::
           ExAws.Operation.Query.t()
@@ -2069,7 +2111,7 @@ defmodule ExAws.AutoScaling do
     "Unhealthy" to have the instance be out of service. Amazon EC2
     Auto Scaling terminates and replaces the unhealthy instance.
 
-    * opts (`t:set_instance_health_opts`)
+    * opts (`t:set_instance_health_opts/0`)
   """
   @spec set_instance_health(instance_id :: binary, health_status :: binary) ::
           ExAws.Operation.Query.t()
@@ -2099,7 +2141,7 @@ defmodule ExAws.AutoScaling do
 
     * instance_ids (`List` of `String`) - One or more instance IDs.
 
-    * protected_from_scale_in (Boolean) - Indicates whether the instance is
+    * protected_from_scale_in (boolean) - Indicates whether the instance is
     protected from termination by Amazon EC2 Auto Scaling when scaling in.
   """
   @spec set_instance_protection(
@@ -2145,7 +2187,7 @@ defmodule ExAws.AutoScaling do
 
     * instance_id (`String`) - The ID of the instance
 
-    * should_decrement_desired_capacity (Boolean) - Indicates whether terminating
+    * should_decrement_desired_capacity (boolean) - Indicates whether terminating
     the instance also decrements the size of the Auto Scaling group.
 
   """
