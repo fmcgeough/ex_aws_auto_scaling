@@ -1,3 +1,3 @@
-v2.0
+v0.0.9
 
-* Initial project release. All API functions implemented
+* Initial project release. All API functions implemented. Doc in good state.

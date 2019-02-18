@@ -123,8 +123,8 @@ defmodule ExAws.AutoScaling do
     Describes a launch template and the launch template version
 
     The launch template that is specified must be configured for use with an Auto
-    Scaling group. For more information, see Creating a Launch Template for an Auto
-    Scaling group in the Amazon EC2 Auto Scaling User Guide.
+    Scaling group. For more information, see [Creating a Launch Template for an Auto
+    Scaling group](https://amzn.to/2NbIsiC) in the Amazon EC2 Auto Scaling User Guide.
 
   ## Keys
 
@@ -597,7 +597,7 @@ defmodule ExAws.AutoScaling do
         ]
 
   @typedoc """
-    Describes a block device mapping.
+    Describes a block device mapping. See `t:ebs/0`
 
   ## Keys
 
@@ -1577,8 +1577,8 @@ defmodule ExAws.AutoScaling do
     For information about updating this limit, see Amazon EC2 Auto Scaling
     Limits in the Amazon EC2 Auto Scaling User Guide.
 
-    For more information, see Launch Configurations in the Amazon EC2 Auto
-    Scaling User Guide.
+    For more information, see [Launch Configurations](https://amzn.to/2KF6Z0C)
+    in the Amazon EC2 Auto Scaling User Guide.
 
   ## Parameters
 
