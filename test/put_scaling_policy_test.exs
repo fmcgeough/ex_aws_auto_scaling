@@ -1,7 +1,7 @@
 defmodule PutScalingPolicyTest do
   use ExUnit.Case
 
-  test "put_scaling_policy" do
+  test "simple put_scaling_policy" do
     op =
       ExAws.AutoScaling.put_scaling_policy("my-asg", "my-policy",
         policy_type: "StepScaling",
@@ -31,6 +31,34 @@ defmodule PutScalingPolicyTest do
              "StepAdjustments.member.2.MetricIntervalLowerBound" => 10,
              "StepAdjustments.member.2.MetricIntervalUpperBound" => 20,
              "StepAdjustments.member.2.ScalingAdjustment" => 2
+           }
+  end
+
+  test "put_scaling_policy with target tracking" do
+    op =
+      ExAws.AutoScaling.put_scaling_policy("my-asg", "my-policy",
+        policy_type: "TargetTrackingScaling",
+        target_tracking_configuration: [
+          target_value: 75.0,
+          predefined_metric_specification: [
+            predefined_metric_type: "ECSServiceAverageCPUUtilization"
+          ],
+          scale_out_cooldown: 60,
+          scale_in_cooldown: 60
+        ]
+      )
+
+    assert op.params == %{
+             "Action" => "PutScalingPolicy",
+             "AutoScalingGroupName" => "my-asg",
+             "PolicyName" => "my-policy",
+             "PolicyType" => "TargetTrackingScaling",
+             "TargetTrackingConfiguration.PredefinedMetricSpecification.PredefinedMetricType" =>
+               "ECSServiceAverageCPUUtilization",
+             "TargetTrackingConfiguration.ScaleInCooldown" => 60,
+             "TargetTrackingConfiguration.ScaleOutCooldown" => 60,
+             "TargetTrackingConfiguration.TargetValue" => 75.0,
+             "Version" => "2011-01-01"
            }
   end
 end
