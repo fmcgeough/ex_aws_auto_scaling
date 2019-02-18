@@ -1166,7 +1166,7 @@ defmodule ExAws.AutoScaling do
 
     To describe the load balancers for an Auto Scaling group, use `describe_load_balancers/2`.
 
-    To detach the load balancer from the Auto Scaling group, use `detach_load_balancers/1`.
+    To detach the load balancer from the Auto Scaling group, use `detach_load_balancers/2`.
 
   ## Parameters
 
@@ -1203,10 +1203,10 @@ defmodule ExAws.AutoScaling do
     Attaches one or more target groups to the specified Auto Scaling group
 
     To describe the target groups for an Auto Scaling group, use
-    `describe_load_balancer_target_groups\1'.
+    `describe_load_balancer_target_groups/2`.
 
     To detach the target group from the Auto Scaling group, use
-    `detach_load_balancer_target_groups\1'
+    `detach_load_balancer_target_groups/2`
 
   ## Example:
 
@@ -1295,20 +1295,20 @@ defmodule ExAws.AutoScaling do
 
     This step is a part of the procedure for adding a lifecycle hook to an Auto Scaling group:
 
-    * (Optional) Create a Lambda function and a rule that allows CloudWatch Events to invoke your
+    1. (Optional) Create a Lambda function and a rule that allows CloudWatch Events to invoke your
     Lambda function when Amazon EC2 Auto Scaling launches or terminates instances.
 
-    * (Optional) Create a notification target and an IAM role. The target can be either an Amazon
+    2. (Optional) Create a notification target and an IAM role. The target can be either an Amazon
     SQS queue or an Amazon SNS topic. The role allows Amazon EC2 Auto Scaling to publish lifecycle
     notifications to the target.
 
-    * Create the lifecycle hook. Specify whether the hook is used when the instances launch or
+    3. Create the lifecycle hook. Specify whether the hook is used when the instances launch or
     terminate.
 
-    * If you need more time, record the lifecycle action heartbeat to keep the instance in a
+    4. If you need more time, record the lifecycle action heartbeat to keep the instance in a
     pending state.
 
-    * If you finish before the timeout period ends, complete the lifecycle action.
+    5. If you finish before the timeout period ends, complete the lifecycle action.
 
   ## Parameters
 
@@ -1319,7 +1319,7 @@ defmodule ExAws.AutoScaling do
     * lifecycle_action_result (`String`) - The action for the group to take. This
     parameter can be either "CONTINUE" or "ABANDON".
 
-    * opts (`t:complete_life_cycle_action_opts`) - The optional parameters
+    * opts (`t:complete_life_cycle_action_opts/0`) - The optional parameters
   """
   @spec complete_life_cycle_action(
           auto_scaling_group_name :: binary,
@@ -1807,7 +1807,7 @@ defmodule ExAws.AutoScaling do
 
   ## Parameters
 
-    * opts (`t:describe_tags_opts`) - optional parameters
+    * opts (`t:describe_tags_opts/0`) - optional parameters
   """
   @spec describe_tags() :: ExAws.Operation.Query.t()
   @spec describe_tags(opts :: describe_tags_opts) :: ExAws.Operation.Query.t()
@@ -1851,8 +1851,17 @@ defmodule ExAws.AutoScaling do
     * should_decrement_desired_capacity (boolean) - Indicates whether the Auto Scaling
     group decrements the desired capacity value by the number of instances detached.
 
-    * opts (`t:instances_opts`) - optional parameters
+    * opts (`t:instances_opts/0`) - optional parameters
   """
+  @spec detach_instances(
+          auto_scaling_group_name :: binary,
+          should_decrement_desired_capacity :: boolean
+        ) :: ExAws.Operation.Query.t()
+  @spec detach_instances(
+          auto_scaling_group_name :: binary,
+          should_decrement_desired_capacity :: boolean,
+          opts :: instances_opts
+        ) :: ExAws.Operation.Query.t()
   def detach_instances(auto_scaling_group_name, should_decrement_desired_capacity, opts \\ []) do
     [
       {:auto_scaling_group_name, auto_scaling_group_name},
@@ -1880,6 +1889,10 @@ defmodule ExAws.AutoScaling do
     * load_balancer_names (`List` of `String`) - The names of the load balancers. You
     can specify up to 10 load balancers.
   """
+  @spec detach_load_balancers(
+          auto_scaling_group_name :: binary,
+          load_balancer_names :: [binary, ...]
+        ) :: ExAws.Operation.Query.t()
   def detach_load_balancers(auto_scaling_group_name, load_balancer_names) do
     [
       {:auto_scaling_group_name, auto_scaling_group_name},
@@ -1898,6 +1911,10 @@ defmodule ExAws.AutoScaling do
     * target_group_arns (`List` of `String`) - The Amazon Resource Names (ARN) of
     the target groups. You can specify up to 10 target groups.
   """
+  @spec detach_load_balancer_target_groups(
+          auto_scaling_group_name :: binary,
+          target_group_arns :: [binary, ...]
+        ) :: ExAws.Operation.Query.t()
   def detach_load_balancer_target_groups(auto_scaling_group_name, target_group_arns) do
     [
       {:auto_scaling_group_name, auto_scaling_group_name},
@@ -1913,7 +1930,7 @@ defmodule ExAws.AutoScaling do
 
     * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
 
-    * opts (`t:metrics_collection_opts`) - optional parameters
+    * opts (`t:metrics_collection_opts/0`) - optional parameters
   """
   @spec disable_metrics_collection(auto_scaling_group_name :: binary) :: ExAws.Operation.Query.t()
   @spec disable_metrics_collection(
@@ -1938,8 +1955,15 @@ defmodule ExAws.AutoScaling do
     * granularity (`String`) - The granularity to associate with the metrics to collect.
     The only valid value is "1Minute".
 
-    * opts (`t:metrics_collection_opts`) - optional parameters
+    * opts (`t:metrics_collection_opts/0`) - optional parameters
   """
+  @spec enable_metrics_collection(auto_scaling_group_name :: binary, granularity :: binary) ::
+          ExAws.Operation.Query.t()
+  @spec enable_metrics_collection(
+          auto_scaling_group_name :: binary,
+          granularity :: binary,
+          opts :: metrics_collection_opts
+        ) :: ExAws.Operation.Query.t()
   def enable_metrics_collection(auto_scaling_group_name, granularity \\ "1Minute", opts \\ []) do
     [{:auto_scaling_group_name, auto_scaling_group_name}, {:granularity, granularity} | opts]
     |> build_request(:enable_metrics_collection)
@@ -1958,7 +1982,7 @@ defmodule ExAws.AutoScaling do
     * should_decrement_desired_capacity (boolean) - Indicates whether to decrement the desired
     capacity of the Auto Scaling group by the number of instances moved to Standby mode.
 
-    * opts (`t:instances_opts`) - optional parameters
+    * opts (`t:instances_opts/0`) - optional parameters
   """
   @spec enter_standby(
           auto_scaling_group_name :: binary,
@@ -1988,6 +2012,13 @@ defmodule ExAws.AutoScaling do
 
     * opts (`t:execute_policy_opts/0`) - optional parameters
   """
+  @spec execute_policy(auto_scaling_group_name :: binary, policy_name :: binary) ::
+          ExAws.Operation.Query.t()
+  @spec execute_policy(
+          auto_scaling_group_name :: binary,
+          policy_name :: binary,
+          opts :: execute_policy_opts
+        ) :: ExAws.Operation.Query.t()
   def execute_policy(auto_scaling_group_name, policy_name, opts \\ []) do
     [
       {:auto_scaling_group_name, auto_scaling_group_name},
@@ -2006,8 +2037,9 @@ defmodule ExAws.AutoScaling do
 
     * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
 
-    * opts (`t:instances_opts`) - optional parameters
+    * opts (`t:instances_opts/0`) - optional parameters
   """
+  @spec exit_standby(auto_scaling_group_name :: binary) :: ExAws.Operation.Query.t()
   @spec exit_standby(auto_scaling_group_name :: binary, opts :: instances_opts) ::
           ExAws.Operation.Query.t()
   def exit_standby(auto_scaling_group_name, opts \\ []) do
@@ -2025,21 +2057,21 @@ defmodule ExAws.AutoScaling do
     This step is a part of the procedure for adding a lifecycle hook to an
     Auto Scaling group:
 
-      1. (Optional) Create a Lambda function and a rule that allows CloudWatch
-      Events to invoke your Lambda function when Amazon EC2 Auto Scaling launches
-      or terminates instances.
+    1. (Optional) Create a Lambda function and a rule that allows CloudWatch
+    Events to invoke your Lambda function when Amazon EC2 Auto Scaling launches
+    or terminates instances.
 
-      2. (Optional) Create a notification target and an IAM role. The target can be
-      either an Amazon SQS queue or an Amazon SNS topic. The role allows Amazon EC2
-      Auto Scaling to publish lifecycle notifications to the target.
+    2. (Optional) Create a notification target and an IAM role. The target can be
+    either an Amazon SQS queue or an Amazon SNS topic. The role allows Amazon EC2
+    Auto Scaling to publish lifecycle notifications to the target.
 
-      3. Create the lifecycle hook. Specify whether the hook is used when the instances
-      launch or terminate.
+    3. Create the lifecycle hook. Specify whether the hook is used when the instances
+    launch or terminate.
 
-      4. If you need more time, record the lifecycle action heartbeat to keep the
-      instance in a pending state.
+    4. If you need more time, record the lifecycle action heartbeat to keep the
+    instance in a pending state.
 
-      5. If you finish before the timeout period ends, complete the lifecycle action.
+    5. If you finish before the timeout period ends, complete the lifecycle action.
 
     For more information, see Amazon EC2 Auto Scaling Lifecycle Hooks in the Amazon EC2
     Auto Scaling User Guide.
@@ -2152,7 +2184,7 @@ defmodule ExAws.AutoScaling do
 
     * scheduled_action_name (`String`) - The name of this scaling action
 
-    * opts (`t:put_scheduled_update_group_action_opts`)
+    * opts (`t:put_scheduled_update_group_action_opts/0`)
   """
   @spec put_scheduled_update_group_action(
           auto_scaling_group_name :: binary,
@@ -2408,6 +2440,12 @@ defmodule ExAws.AutoScaling do
     value of max_size.
 
     * All other optional parameters are left unchanged if not specified.
+
+  ## Parameters
+
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
+
+    * opts (`t:update_auto_scaling_group_opts/0`) - optional parameters
   """
   @spec update_auto_scaling_group(auto_scaling_group_name :: binary) :: ExAws.Operation.Query.t()
   @spec update_auto_scaling_group(
