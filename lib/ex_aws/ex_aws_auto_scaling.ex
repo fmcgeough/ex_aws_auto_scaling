@@ -25,6 +25,7 @@ defmodule ExAws.AutoScaling do
     :load_balancer_names,
     :metrics,
     :notification_types,
+    :scaling_processes,
     :scheduled_action_names,
     :scheduled_update_group_actions,
     :security_groups,
@@ -1118,6 +1119,27 @@ defmodule ExAws.AutoScaling do
   @type record_lifecycle_action_heartbeat_opts :: [
           instance_id: binary,
           lifecycle_action_token: binary
+        ]
+
+  @typedoc """
+    Optional parameters to `resume_processes/2`
+
+  ## Keys
+
+    * scaling_processes (`List` of `String`) - One or more of the following processes.
+    If you omit this parameter, all processes are specified.
+
+      * Launch
+      * Terminate
+      * HealthCheck
+      * ReplaceUnhealthy
+      * AZRebalance
+      * AlarmNotification
+      * ScheduledActions
+      * AddToLoadBalancer
+  """
+  @type resume_processes_opts :: [
+          scaling_processes: [binary, ...]
         ]
 
   @doc """
@@ -2269,9 +2291,16 @@ defmodule ExAws.AutoScaling do
 
     For more information, see Suspending and Resuming Scaling Processes
     in the Amazon EC2 Auto Scaling User Guide.
+
+  ## Parameters
+
+    * auto_scaling_group_name (`String`) - The name of the Auto Scaling group
+
+    * opts (`t:resume_processes_opts/0`) - optional parameters
   """
-  def resume_processes do
-    request(%{}, :resume_processes)
+  def resume_processes(auto_scaling_group_name, opts \\ []) do
+    [{:auto_scaling_group_name, auto_scaling_group_name} | opts]
+    |> build_request(:resume_processes)
   end
 
   @doc """
