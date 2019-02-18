@@ -2319,19 +2319,19 @@ defmodule ExAws.AutoScaling do
 
     * opts (`t: set_desired_dapacity_opts/0`)
   """
-  @spec set_desired_dapacity(auto_scaling_group_name :: binary, desired_capacity :: integer) ::
+  @spec set_desired_capacity(auto_scaling_group_name :: binary, desired_capacity :: integer) ::
           ExAws.Operation.Query.t()
-  @spec set_desired_dapacity(
+  @spec set_desired_capacity(
           auto_scaling_group_name :: binary,
           desired_capacity :: integer,
           opts :: set_desired_dapacity_opts
         ) :: ExAws.Operation.Query.t()
-  def set_desired_dapacity(auto_scaling_group_name, desired_capacity, opts \\ []) do
+  def set_desired_capacity(auto_scaling_group_name, desired_capacity, opts \\ []) do
     [
       {:auto_scaling_group_name, auto_scaling_group_name},
       {:desired_capacity, desired_capacity} | opts
     ]
-    |> build_request(:set_desired_dapacity)
+    |> build_request(:set_desired_capacity)
   end
 
   @doc """
