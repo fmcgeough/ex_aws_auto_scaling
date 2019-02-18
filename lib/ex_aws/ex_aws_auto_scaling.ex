@@ -1068,6 +1068,30 @@ defmodule ExAws.AutoScaling do
     Represents a predefined metric for a target tracking scaling policy to use with
     Amazon EC2 Auto Scaling.
 
+  ## Keys
+
+    * predefined_metric_type (`String`) - The metric type. Valid Values: "ASGAverageCPUUtilization",
+    "ASGAverageNetworkIn", "ASGAverageNetworkOut", "ALBRequestCountPerTarget"
+
+    * resource_label (`String`) - Identifies the resource associated with the metric type.
+    The following predefined metrics are available:
+
+      * "ASGAverageCPUUtilization" - Average CPU utilization of the Auto Scaling group.
+      * "ASGAverageNetworkIn" - Average number of bytes received on all network interfaces
+      by the Auto Scaling group.
+      * "ASGAverageNetworkOut" - Average number of bytes sent out on all network interfaces
+      by the Auto Scaling group.
+      * "ALBRequestCountPerTarget" - Number of requests completed per target in an Application
+      Load Balancer or a Network Load Balancer target group.
+
+      For predefined metric types ASGAverageCPUUtilization, ASGAverageNetworkIn, and
+      ASGAverageNetworkOut, the parameter must not be specified as the resource associated
+      with the metric type is the Auto Scaling group. For predefined metric type
+      ALBRequestCountPerTarget, the parameter must be specified in the format:
+      `app/load-balancer-name/load-balancer-id/targetgroup/target-group-name/target-group-id`,
+      where `app/load-balancer-name/load-balancer-id` is the final portion of the load balancer
+      ARN, and `targetgroup/target-group-name/target-group-id` is the final portion of the
+      target group ARN. The target group must be attached to the Auto Scaling group.
   """
   @type predefined_metric_specification :: [
           predefined_metric_type: binary,
@@ -1077,6 +1101,21 @@ defmodule ExAws.AutoScaling do
   @typedoc """
     A target tracking scaling policy.
 
+  ## Keys
+
+    * customized_metric_specification (`t:customized_metric_specification/0`) -
+    A customized metric. You can specify either a predefined metric or a customized metric.
+
+    * disable_scale_in (boolean) - Indicates whether scaling in by the target
+    tracking scaling policy is disabled. If scaling in is disabled, the target tracking
+    scaling policy doesn't remove instances from the Auto Scaling group. Otherwise, the
+    target tracking scaling policy can remove instances from the Auto Scaling group. The
+    default is disabled.
+
+    * predefined_metric_specification (`t:predefined_metric_specification/0`) -
+    A predefined metric. You can specify either a predefined metric or a customized metric.
+
+    * target_value (`Float`) - The target value for the metric.
   """
   @type target_tracking_configuration :: [
           customized_metric_specification: customized_metric_specification,
