@@ -1,7 +1,7 @@
 defmodule SetInstanceProtectionTest do
   use ExUnit.Case
 
-  test "terminate instance in ASG" do
+  test "mark instance as not protected from ScaleIn in ASG" do
     op = ExAws.AutoScaling.set_instance_protection("my-asg", ["i-12345678"], false)
 
     assert op.params == %{

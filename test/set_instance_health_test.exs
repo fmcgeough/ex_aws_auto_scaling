@@ -1,7 +1,7 @@
 defmodule SetInstanceHealthTest do
   use ExUnit.Case
 
-  test "terminate instance in ASG" do
+  test "mark instance Unhealthy in ASG" do
     op =
       ExAws.AutoScaling.set_instance_health("i-12345678", "Unhealthy",
         should_respect_grace_period: true

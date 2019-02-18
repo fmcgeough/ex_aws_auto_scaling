@@ -29,6 +29,7 @@ defmodule ExAws.AutoScaling do
     :scheduled_action_names,
     :scheduled_update_group_actions,
     :security_groups,
+    :step_adjustments,
     :target_group_arns
   ]
 
@@ -1085,7 +1086,103 @@ defmodule ExAws.AutoScaling do
         ]
 
   @typedoc """
+    Describes an adjustment based on the difference between the value of the
+    aggregated CloudWatch metric and the breach threshold that you've defined
+    for the alarm.
+
+    For the following examples, suppose that you have an alarm with a breach
+    threshold of 50:
+
+    * To trigger the adjustment when the metric is greater than or equal to
+    50 and less than 60, specify a lower bound of 0 and an upper bound of 10.
+    * To trigger the adjustment when the metric is greater than 40 and less
+    than or equal to 50, specify a lower bound of -10 and an upper bound of 0.
+
+    There are a few rules for the step adjustments for your step policy:
+
+    * The ranges of your step adjustments can't overlap or have a gap.
+    * At most, one step adjustment can have a null lower bound. If one step
+    adjustment has a negative lower bound, then there must be a step adjustment
+    with a null lower bound.
+    * At most, one step adjustment can have a null upper bound. If one step
+    adjustment has a positive upper bound, then there must be a step adjustment
+    with a null upper bound.
+    * The upper and lower bound can't be null in the same step adjustment.
+
+  ## Keys
+
+    * metric_interval_lower_bound (`Float`) - The lower bound for the difference
+    between the alarm threshold and the CloudWatch metric. If the metric value is
+    above the breach threshold, the lower bound is inclusive (the metric must be
+    greater than or equal to the threshold plus the lower bound). Otherwise, it is
+    exclusive (the metric must be greater than the threshold plus the lower bound).
+    A null value indicates negative infinity.
+
+    * metric_interval_upper_bound (`Float`) - The upper bound for the difference
+    between the alarm threshold and the CloudWatch metric. If the metric value is
+    above the breach threshold, the upper bound is exclusive (the metric must be
+    less than the threshold plus the upper bound). Otherwise, it is inclusive (the
+    metric must be less than or equal to the threshold plus the upper bound). A
+    null value indicates positive infinity. The upper bound must be greater than
+    the lower bound.
+
+    * scaling_adjustment (`Integer`) - The amount by which to scale, based on the
+    specified adjustment type. A positive value adds to the current capacity while
+    a negative number removes from the current capacity.
+  """
+  @type step_adjustment :: [
+          metric_interval_lower_bound: float,
+          metric_interval_upper_bound: float,
+          scaling_adjustment: integer
+        ]
+
+  @typedoc """
     Optional parameters to `put_scaling_policy/3`
+
+  ## Keys
+
+    * adjustment_type (`String`) - The adjustment type. The valid values are
+    "ChangeInCapacity", "ExactCapacity", and "PercentChangeInCapacity". This
+    parameter is supported if the policy type is SimpleScaling or StepScaling.
+    For more information, see Dynamic Scaling in the Amazon EC2 Auto Scaling
+    User Guide.
+
+    * cooldown (`Integer`) - The amount of time, in seconds, after a scaling
+    activity completes and before the next scaling activity can start. If this
+    parameter is not specified, the default cooldown period for the group applies.
+    This parameter is supported if the policy type is SimpleScaling. For more
+    information, see Scaling Cooldowns in the Amazon EC2 Auto Scaling User Guide.
+
+    * estimated_instance_warmup (`Integer`) - The estimated time, in seconds,
+    until a newly launched instance can contribute to the CloudWatch metrics.
+    The default is to use the value specified for the default cooldown period
+    for the group. This parameter is supported if the policy type is StepScaling
+    or TargetTrackingScaling.
+
+    * metric_aggregation_type (`String`) - The aggregation type for the CloudWatch
+    metrics. The valid values are "Minimum", "Maximum", and "Average". If the
+    aggregation type is null, the value is treated as "Average". This parameter
+    is supported if the policy type is StepScaling.
+
+    * min_adjustment_magnitude (`Integer`) - The minimum number of instances to
+    scale. If the value of AdjustmentType is PercentChangeInCapacity, the scaling
+    policy changes the DesiredCapacity of the Auto Scaling group by at least this
+    many instances. Otherwise, the error is ValidationError. This parameter is
+    supported if the policy type is SimpleScaling or StepScaling.
+
+    * min_adjustment_step (`Integer`) - This parameter has been deprecated. Available
+    for backward compatibility. Use min_adjustment_magnitude instead.
+
+    * policy_type (`String`) - The policy type. The valid values are "SimpleScaling",
+    "StepScaling", and "TargetTrackingScaling". If the policy type is null, the
+    value is treated as "SimpleScaling".
+
+    * scaling_adjustment (`Integer`) - The amount by which to scale, based on the
+    specified adjustment type. A positive value adds to the current capacity while
+    a negative number removes from the current capacity. This parameter is required
+    if the policy type is SimpleScaling and not supported otherwise.
+
+    * target_tracking_configuration (`t:target_tracking_configuration/0`) -
   """
   @type put_scaling_policy_opts :: [
           adjustment_type: binary,
@@ -1096,13 +1193,30 @@ defmodule ExAws.AutoScaling do
           min_adjustment_step: integer,
           policy_type: binary,
           scaling_adjustment: integer,
+          step_adjustments: [step_adjustment, ...],
           target_tracking_configuration: target_tracking_configuration
         ]
 
   @typedoc """
     Optional parameters to `put_scheduled_update_group_action/3`
 
+  ## Keys
 
+    * desired_capacity (`Integer`) - The number of EC2 instances that should
+    be running in the group.
+
+    * end_time (`String`) - The time for the recurring schedule to end. Amazon
+    EC2 Auto Scaling does not perform the action after this time.
+
+    * max_size (`Integer`) - The maximum size for the Auto Scaling group.
+
+    * min_size (`Integer`) - The minimum size for the Auto Scaling group.
+
+    * recurrence (`String`) - The recurring schedule for this action, in Unix cron
+    syntax format. This format consists of five fields separated by white
+    spaces: `[Minute] [Hour] [Day_of_Month] [Month_of_Year] [Day_of_Week]`. The value
+    must be in quotes (for example, "30 0 1 1,6,12 *"). For more information about
+    this format, see [Crontab](http://crontab.org/).
   """
   @type put_scheduled_update_group_action_opts :: [
           desired_capacity: integer,
@@ -1115,6 +1229,15 @@ defmodule ExAws.AutoScaling do
 
   @typedoc """
     Optional parameters to `record_lifecycle_action_heartbeat/3`
+
+  ## Keys
+
+    * instance_id (`String`) - The ID of the instance
+
+    * lifecycle_action_token (`String`) - A token that uniquely identifies
+    a specific lifecycle action associated with an instance. Amazon EC2 Auto
+    Scaling sends this token to the notification target that you specified
+    when you created the lifecycle hook.
   """
   @type record_lifecycle_action_heartbeat_opts :: [
           instance_id: binary,
