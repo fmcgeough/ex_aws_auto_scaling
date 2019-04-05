@@ -1,6 +1,7 @@
 if Code.ensure_loaded?(SweetXml) do
   defmodule ExAws.AutoScaling.Parsers do
     use ExAws.Operation.Query.Parser
+    alias AwsDetective.AutoScaling.ParseTransforms
 
     def parse({:ok, %{body: xml} = resp}, :describe_account_limits) do
       parsed_body =
@@ -26,7 +27,9 @@ if Code.ensure_loaded?(SweetXml) do
         xml
         |> SweetXml.xpath(
           ~x"//DescribeAdjustmentTypesResponse",
-          adjustment_types: adjustment_types_xml_description(),
+          adjustment_types:
+            ~x"./DescribeAdjustmentTypesResult/AdjustmentTypes/member/AdjustmentType/text()"l
+            |> SweetXml.transform_by(&ParseTransforms.to_list/1),
           request_id: ~x"./ResponseMetadata/RequestId/text()"s
         )
 
@@ -64,15 +67,10 @@ if Code.ensure_loaded?(SweetXml) do
         xml
         |> SweetXml.xpath(
           ~x"//DescribeAutoScalingNotificationTypesResponse",
-          request_id: ~x"./ResponseMetadata/RequestId/text()"s
-        )
-        |> Map.put(
-          :auto_scaling_notification_types,
-          parse_to_list(
-            xml,
-            "DescribeAutoScalingNotificationTypesResponse",
-            "DescribeAutoScalingNotificationTypesResult/AutoScalingNotificationTypes/member"
-          )
+          request_id: ~x"./ResponseMetadata/RequestId/text()"s,
+          auto_scaling_notification_types:
+            ~x"./DescribeAutoScalingNotificationTypesResult/AutoScalingNotificationTypes/member/text()"l
+            |> SweetXml.transform_by(&ParseTransforms.to_list/1)
         )
 
       {:ok, Map.put(resp, :body, parsed_body)}
@@ -108,15 +106,10 @@ if Code.ensure_loaded?(SweetXml) do
         xml
         |> SweetXml.xpath(
           ~x"//DescribeLifecycleHookTypesResponse",
-          request_id: ~x"./ResponseMetadata/RequestId/text()"s
-        )
-        |> Map.put(
-          :lifecycle_hook_types,
-          parse_to_list(
-            xml,
-            "DescribeLifecycleHookTypesResponse",
-            "DescribeLifecycleHookTypesResult/LifecycleHookTypes/member"
-          )
+          request_id: ~x"./ResponseMetadata/RequestId/text()"s,
+          lifecycle_hook_types:
+            ~x"./DescribeLifecycleHookTypesResult/LifecycleHookTypes/member/text()"l
+            |> SweetXml.transform_by(&ParseTransforms.to_list/1)
         )
 
       {:ok, Map.put(resp, :body, parsed_body)}
@@ -152,23 +145,13 @@ if Code.ensure_loaded?(SweetXml) do
         xml
         |> SweetXml.xpath(
           ~x"//DescribeMetricCollectionTypesResponse",
-          request_id: ~x"./ResponseMetadata/RequestId/text()"s
-        )
-        |> Map.put(
-          :granularities,
-          parse_to_list(
-            xml,
-            "DescribeMetricCollectionTypesResponse",
-            "DescribeMetricCollectionTypesResult/Granularities/member/Granularity"
-          )
-        )
-        |> Map.put(
-          :metrics,
-          parse_to_list(
-            xml,
-            "DescribeMetricCollectionTypesResponse",
-            "DescribeMetricCollectionTypesResult/Metrics/member/Metric"
-          )
+          request_id: ~x"./ResponseMetadata/RequestId/text()"s,
+          granularities:
+            ~x"./DescribeMetricCollectionTypesResult/Granularities/member/Granularity/text()"l
+            |> SweetXml.transform_by(&ParseTransforms.to_list/1),
+          metrics:
+            ~x"./DescribeMetricCollectionTypesResult/Metrics/member/Metric/text()"l
+            |> SweetXml.transform_by(&ParseTransforms.to_list/1)
         )
 
       {:ok, Map.put(resp, :body, parsed_body)}
@@ -218,15 +201,10 @@ if Code.ensure_loaded?(SweetXml) do
         xml
         |> SweetXml.xpath(
           ~x"//DescribeScalingProcessTypesResponse",
-          request_id: ~x"./ResponseMetadata/RequestId/text()"s
-        )
-        |> Map.put(
-          :process_types,
-          parse_to_list(
-            xml,
-            "DescribeScalingProcessTypesResponse",
-            "DescribeScalingProcessTypesResult/Processes/member/ProcessName"
-          )
+          request_id: ~x"./ResponseMetadata/RequestId/text()"s,
+          process_types:
+            ~x"./DescribeScalingProcessTypesResult/Processes/member/ProcessName/text()"l
+            |> SweetXml.transform_by(&ParseTransforms.to_list/1)
         )
 
       {:ok, Map.put(resp, :body, parsed_body)}
@@ -263,34 +241,16 @@ if Code.ensure_loaded?(SweetXml) do
         xml
         |> SweetXml.xpath(
           ~x"//DescribeTerminationPolicyTypesResponse",
-          request_id: ~x"./ResponseMetadata/RequestId/text()"s
-        )
-        |> Map.put(
-          :termination_policy_types,
-          parse_to_list(
-            xml,
-            "DescribeTerminationPolicyTypesResponse",
-            "DescribeTerminationPolicyTypesResult/TerminationPolicyTypes/member"
-          )
+          request_id: ~x"./ResponseMetadata/RequestId/text()"s,
+          termination_policy_types:
+            ~x"DescribeTerminationPolicyTypesResult/TerminationPolicyTypes/member/text()"l
+            |> SweetXml.transform_by(&ParseTransforms.to_list/1)
         )
 
       {:ok, Map.put(resp, :body, parsed_body)}
     end
 
     def parse(val, _), do: val
-
-    defp parse_to_list(xml, response_name, path) do
-      xml
-      |> SweetXml.xpath(
-        ~x"//#{response_name}",
-        item: [
-          ~x"./#{path}"l,
-          id: ~x"./text()"s
-        ]
-      )
-      |> Enum.map(fn {:item, a_list} -> Enum.map(a_list, fn %{id: val} -> val end) end)
-      |> List.flatten()
-    end
 
     defp tags_xml_description do
       [
@@ -373,7 +333,8 @@ if Code.ensure_loaded?(SweetXml) do
             statistic: ~x"./Statistic/text()"s,
             unit: ~x"./Unit/text()"s
           ],
-          disable_scale_in: ~x"./DisableScaleIn/text()"s,
+          disable_scale_in:
+            ~x"./DisableScaleIn/text()"s |> SweetXml.transform_by(&ParseTransforms.to_boolean/1),
           predefined_metric_specification: [
             ~x"./PredefinedMetricSpecification"l,
             predefined_metric_type: ~x"./PredefinedMetricType/text()"s,
@@ -433,8 +394,11 @@ if Code.ensure_loaded?(SweetXml) do
           device_name: ~x"./DeviceName/text()"s,
           ebs: [
             ~x"./Ebs"l,
-            delete_on_termination: ~x"./DeleteOnTermination/text()"s,
-            encrypted: ~x"./Encrypted/text()"s,
+            delete_on_termination:
+              ~x"./DeleteOnTermination/text()"s
+              |> SweetXml.transform_by(&ParseTransforms.to_boolean/1),
+            encrypted:
+              ~x"./Encrypted/text()"s |> SweetXml.transform_by(&ParseTransforms.to_boolean/1),
             iops: ~x"./Iops/text()"oi,
             snapshot_id: ~x"./SnapshotId/text()"s,
             volume_size: ~x"./VolumeSize/text()"oi,
@@ -484,7 +448,9 @@ if Code.ensure_loaded?(SweetXml) do
           launch_template_id: ~x"./LaunchTemplateId/text()"s
         ],
         life_cycle_state: ~x"./LifecycleState/text()"s,
-        protected_from_scale_in: ~x"./ProtectedFromScaleIn/text()"s
+        protected_from_scale_in:
+          ~x"./ProtectedFromScaleIn/text()"s
+          |> SweetXml.transform_by(&ParseTransforms.to_boolean/1)
       ]
     end
 
@@ -493,10 +459,9 @@ if Code.ensure_loaded?(SweetXml) do
         ~x"./DescribeAutoScalingGroupsResult/AutoScalingGroups/member"l,
         auto_scaling_group_arn: ~x"./AutoScalingGroupARN/text()"s,
         auto_scaling_group_name: ~x"./AutoScalingGroupName/text()"s,
-        availability_zones: [
-          ~x".//AvailabilityZones/member"l,
-          id: ~x"./text()"s
-        ],
+        availability_zones:
+          ~x".//AvailabilityZones/member/text()"l
+          |> SweetXml.transform_by(&ParseTransforms.to_list/1),
         created_time: ~x"./CreatedTime/text()"s,
         default_cooldown: ~x"./DefaultCooldown/text()"i,
         desired_capacity: ~x"./DesiredCapacity/text()"i,
@@ -513,7 +478,9 @@ if Code.ensure_loaded?(SweetXml) do
           life_cycle_state: ~x"./LifecycleState/text()"s,
           instance_id: ~x"./InstanceId/text()"s,
           health_status: ~x"./HealthStatus/text()"s,
-          protected_from_scale_in: ~x"./ProtectedFromScaleIn/text()"s,
+          protected_from_scale_in:
+            ~x"./ProtectedFromScaleIn/text()"s
+            |> SweetXml.transform_by(&ParseTransforms.to_boolean/1),
           availability_zone: ~x"./AvailabilityZone/text()"s
         ],
         mixed_instances_policy: [
@@ -524,27 +491,24 @@ if Code.ensure_loaded?(SweetXml) do
             on_demand_percentage_above_base_capacity:
               ~x"./OnDemandPercentageAboveBaseCapacity/text()"s,
             on_demand_allocation_stategy: ~x"./OnDemandAllocationStrategy/text()"s,
-            spot_instance_pools: ~x"./SpotInstancePools/text()"i,
-            on_demand_capacity: ~x"./OnDemandBaseCapacity/text()"i
+            spot_instance_pools: ~x"./SpotInstancePools/text()"Io,
+            on_demand_capacity: ~x"./OnDemandBaseCapacity/text()"Io
           ],
           launch_template: [
             ~x"./LaunchTemplate/LaunchTemplateSpecification"l,
             template_name: ~x"./LaunchTemplateName/text()"s,
             version: ~x"./Version/text()"s,
             launch_template_id: ~x"./LaunchTemplateId/text()"s
-          ],
-          overrides: [
-            ~x"./Overrides/InstanceType"l,
-            instance_type: ~x"./text()"s
           ]
         ],
-        load_balancer_names: [
-          ~x"./LoadBalancerNames/member"l,
-          name: ~x"./text()"s
-        ],
-        max_size: ~x"./MaxSize/text()"i,
-        min_size: ~x"./MinSize/text()"i,
-        new_instances_protected_from_scale_in: ~x"./NewInstancesProtectedFromScaleIn/text()"s,
+        load_balancer_names:
+          ~x"./LoadBalancerNames/member/text()"l
+          |> SweetXml.transform_by(&ParseTransforms.to_list/1),
+        max_size: ~x"./MaxSize/text()"Io,
+        min_size: ~x"./MinSize/text()"Io,
+        new_instances_protected_from_scale_in:
+          ~x"./NewInstancesProtectedFromScaleIn/text()"s
+          |> SweetXml.transform_by(&ParseTransforms.to_boolean/1),
         placement_group: ~x"./PlacementGroup/text()"s,
         service_linked_role_arn: ~x"./ServiceLinkedRoleARN/text()"s,
         status: ~x"./Status/text()"s,
@@ -561,22 +525,13 @@ if Code.ensure_loaded?(SweetXml) do
           resource_type: ~x"./ResourceType/text()"s,
           value: ~x"./Value/text()"s
         ],
-        target_group_arns: [
-          ~x"./TargetGroupARNs.member"l,
-          arn: ~x"./text()"s
-        ],
-        termination_policies: [
-          ~x"./TerminationPolicies.member"l,
-          policy: ~x"./text()"s
-        ],
+        target_group_arns:
+          ~x"./TargetGroupARNs/member/text()"l
+          |> SweetXml.transform_by(&ParseTransforms.to_list/1),
+        termination_policies:
+          ~x"./TerminationPolicies/member/text()"l
+          |> SweetXml.transform_by(&ParseTransforms.to_list/1),
         vpc_zone_identifier: ~x"./VPCZoneIdentifier/text()"s
-      ]
-    end
-
-    defp adjustment_types_xml_description do
-      [
-        ~x"./DescribeAdjustmentTypesResult/AdjustmentTypes/member"l,
-        adjustment_type: ~x"./AdjustmentType/text()"s
       ]
     end
   end
