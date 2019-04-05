@@ -2676,7 +2676,8 @@ defmodule ExAws.AutoScaling do
         |> Map.put("Action", action_string)
         |> Map.put("Version", @version),
       service: :autoscaling,
-      action: action
+      action: action,
+      parser: &ExAws.AutoScaling.Parsers.parse/2
     }
   end
 
