@@ -2,7 +2,6 @@ if Code.ensure_loaded?(SweetXml) do
   defmodule ExAws.AutoScaling.Parsers do
     use ExAws.Operation.Query.Parser
     alias AwsDetective.AutoScaling.ParseTransforms
-    require Logger
 
     def parse({:ok, %{body: xml} = resp}, :describe_account_limits) do
       parsed_body =
