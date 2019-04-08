@@ -2,6 +2,7 @@ if Code.ensure_loaded?(SweetXml) do
   defmodule ExAws.AutoScaling.Parsers do
     use ExAws.Operation.Query.Parser
     alias AwsDetective.AutoScaling.ParseTransforms
+    require Logger
 
     def parse({:ok, %{body: xml} = resp}, :describe_account_limits) do
       parsed_body =
@@ -252,6 +253,17 @@ if Code.ensure_loaded?(SweetXml) do
 
     def parse(val, _), do: val
 
+    def to_launch_template(nil), do: nil
+
+    def to_launch_template(xml) do
+      xml
+      |> SweetXml.xpath(~x"//LaunchTemplate",
+        launch_template_id: ~x"./LaunchTemplateId/text()"s,
+        launch_template_name: ~x"./LaunchTemplateName/text()"s,
+        version: ~x"./Version/text()"s
+      )
+    end
+
     defp tags_xml_description do
       [
         ~x"./DescribeTagsResult/Tags/member"l,
@@ -470,18 +482,21 @@ if Code.ensure_loaded?(SweetXml) do
           granularity: ~x"./Granularity/text()"s,
           metric: ~x"./Metric/text()"s
         ],
-        health_check_grace_period: ~x"./HealthCheckGracePeriod/text()"i,
+        health_check_grace_period: ~x"./HealthCheckGracePeriod/text()"Io,
         health_check_type: ~x"./HealthCheckType/text()"s,
         instances: [
           ~x"./Instances/member"l,
-          launch_configuration_name: ~x"./LaunchConfigurationName/text()"s,
-          life_cycle_state: ~x"./LifecycleState/text()"s,
-          instance_id: ~x"./InstanceId/text()"s,
+          availability_zone: ~x"./AvailabilityZone/text()"s,
           health_status: ~x"./HealthStatus/text()"s,
+          instance_id: ~x"./InstanceId/text()"s,
+          launch_configuration_name: ~x"./LaunchConfigurationName/text()"s,
+          launch_template:
+            ~x"./LaunchTemplate"
+            |> SweetXml.transform_by(&to_launch_template/1),
+          life_cycle_state: ~x"./LifecycleState/text()"s,
           protected_from_scale_in:
             ~x"./ProtectedFromScaleIn/text()"s
-            |> SweetXml.transform_by(&ParseTransforms.to_boolean/1),
-          availability_zone: ~x"./AvailabilityZone/text()"s
+            |> SweetXml.transform_by(&ParseTransforms.to_boolean/1)
         ],
         mixed_instances_policy: [
           ~x"./MixedInstancesPolicy"l,

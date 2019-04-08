@@ -1,7 +1,7 @@
 defmodule ExAwsAutoScaling.Mixfile do
   use Mix.Project
 
-  @version "0.0.10"
+  @version "0.1.10"
 
   def project do
     [
