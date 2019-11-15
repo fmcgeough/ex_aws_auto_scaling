@@ -1032,7 +1032,7 @@ defmodule ExAws.AutoScaling do
         ]
 
   @typedoc """
-    Optional parameters when calling `set_desired_dapacity/3`
+    Optional parameters when calling `set_desired_capacity/3`
 
   ## Keys
 
@@ -1041,7 +1041,7 @@ defmodule ExAws.AutoScaling do
     Auto Scaling group to its new capacity. By default, Amazon EC2 Auto Scaling does
     not honor the cooldown period during manual scaling activities.
   """
-  @type set_desired_dapacity_opts :: [
+  @type set_desired_capacity_opts :: [
           honor_cooldown: boolean
         ]
 
@@ -2479,14 +2479,14 @@ defmodule ExAws.AutoScaling do
     * desired_capacity (`Integer`) - The number of EC2 instances that should
     be running in the Auto Scaling group.
 
-    * opts (`t: set_desired_dapacity_opts/0`)
+    * opts (`t: set_desired_capacity_opts/0`)
   """
   @spec set_desired_capacity(auto_scaling_group_name :: binary, desired_capacity :: integer) ::
           ExAws.Operation.Query.t()
   @spec set_desired_capacity(
           auto_scaling_group_name :: binary,
           desired_capacity :: integer,
-          opts :: set_desired_dapacity_opts
+          opts :: set_desired_capacity_opts
         ) :: ExAws.Operation.Query.t()
   def set_desired_capacity(auto_scaling_group_name, desired_capacity, opts \\ []) do
     [
