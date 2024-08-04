@@ -1527,7 +1527,7 @@ defmodule ExAws.AutoScaling do
       {:lifecycle_hook_name, lifecycle_hook_name},
       {:lifecycle_action_result, lifecycle_action_result} | opts
     ]
-    |> build_request(:complete_life_cycle_action)
+    |> build_request(:complete_lifecycle_action)
   end
 
   @doc """
