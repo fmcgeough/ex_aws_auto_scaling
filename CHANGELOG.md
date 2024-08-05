@@ -1,3 +1,9 @@
+v0.2.0
+
+* Fixed typo in types
+* Fixed incorrect action. CompleteLifeCycleAction changed toCompleteLifecycleAction.
+* Library upgrade to latest ex_aws, dialyzir, ex_doc
+
 v0.1.10
 * Added parse launch_template for instances on describe_auto_scaling_groups into map
 

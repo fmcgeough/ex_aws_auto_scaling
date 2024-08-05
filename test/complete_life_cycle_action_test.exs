@@ -9,7 +9,7 @@ defmodule CompleteLifeCycleActionTest do
       )
 
     assert op.params == %{
-             "Action" => "CompleteLifeCycleAction",
+             "Action" => "CompleteLifecycleAction",
              "AutoScalingGroupName" => "my-asg",
              "InstanceId" => "i-12345678",
              "LifecycleHookName" => "my-hook",
