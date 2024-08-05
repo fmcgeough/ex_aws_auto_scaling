@@ -2,7 +2,7 @@ defmodule ExAwsAutoScaling.Mixfile do
   use Mix.Project
 
   @source_url "https://github.com/fmcgeough/ex_aws_auto_scaling"
-  @version "0.2.0"
+  @version "0.2.1"
 
   def project do
     [
@@ -45,7 +45,6 @@ defmodule ExAwsAutoScaling.Mixfile do
   defp docs do
     [
       name: "ExAutoScaling",
-      source_ref: "v#{@version}",
       canonical: "http://hexdocs.pm/ex_aws_auto_scaling",
       source_url: @source_url,
       main: "readme",

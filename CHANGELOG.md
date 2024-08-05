@@ -1,3 +1,7 @@
+v0.2.1
+
+* Fixed tagging
+
 v0.2.0
 
 * Fixed typo in types
