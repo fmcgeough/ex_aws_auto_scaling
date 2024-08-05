@@ -1,6 +1,7 @@
 defmodule ExAwsAutoScaling.Mixfile do
   use Mix.Project
 
+  @source_url "https://github.com/fmcgeough/ex_aws_auto_scaling"
   @version "0.2.0"
 
   def project do
@@ -11,14 +12,12 @@ defmodule ExAwsAutoScaling.Mixfile do
       start_permanent: Mix.env() == :prod,
       package: package(),
       deps: deps(),
+      name: "ex_aws_auto_scaling",
+      description: "EC2 Auto Scaling API",
       elixirc_paths: elixirc_paths(Mix.env()),
-      source_url: "https://github.com/fmcgeough/ex_aws_auto_scaling",
-      homepage_url: "https://github.com/fmcgeough/ex_aws_auto_scaling",
-      docs: [
-        main: "readme",
-        extras: ["README.md"],
-        source_ref: "v#{@version}"
-      ]
+      source_url: @source_url,
+      homepage_url: @source_url,
+      docs: docs()
     ]
   end
 
@@ -43,12 +42,22 @@ defmodule ExAwsAutoScaling.Mixfile do
     ]
   end
 
+  defp docs do
+    [
+      name: "ExAutoScaling",
+      source_ref: "v#{@version}",
+      canonical: "http://hexdocs.pm/ex_aws_auto_scaling",
+      source_url: @source_url,
+      main: "readme",
+      extras: ["README.md"]
+    ]
+  end
+
   defp package do
     [
-      description: "AWS EC2 Auto Scaling service for ex_aws",
       maintainers: ["Frank McGeough"],
       licenses: ["MIT"],
-      links: %{github: "https://github.com/fmcgeough/ex_aws_auto_scaling"}
+      links: %{"GitHub" => @source_url}
     ]
   end
 end
